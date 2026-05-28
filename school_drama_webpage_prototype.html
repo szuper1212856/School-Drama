@@ -1,0 +1,795 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --red:#C0392B;--red-light:#FAECEB;--red-dark:#7B241C;
+    --ink:#1a1a1a;--muted:#666;--border:#e0e0e0;
+    --bg:#FAFAF8;--card:#fff;
+    --gold:#B8860B;
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+  .ticker-wrap{background:var(--red);color:#fff;overflow:hidden;height:32px;display:flex;align-items:center}
+  .ticker-label{background:#7B241C;padding:0 14px;height:100%;display:flex;align-items:center;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
+  .ticker-track{display:flex;gap:48px;animation:scroll 28s linear infinite;white-space:nowrap;padding-left:32px}
+  .ticker-track span{font-size:12px;opacity:.95}
+  .ticker-track span::before{content:"★ ";opacity:.6}
+  @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+  header{border-bottom:3px double #1a1a1a;padding:0 20px}
+  .masthead{text-align:center;padding:18px 0 10px;border-bottom:1px solid #e0e0e0;margin-bottom:10px}
+  .masthead-date{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+  .masthead-title{font-family:'Playfair Display',serif;font-size:42px;font-weight:900;letter-spacing:-1px;line-height:1;color:var(--ink)}
+  .masthead-title span{color:var(--red)}
+  .masthead-tagline{font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
+  nav{display:flex;justify-content:center;gap:0;padding-bottom:10px}
+  .nav-btn{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:6px 14px;cursor:pointer;color:var(--muted);border-radius:4px;transition:all .15s;font-weight:500}
+  .nav-btn:hover,.nav-btn.active{color:var(--ink);background:#f0f0ee}
+  .nav-btn.active{color:var(--red);font-weight:500}
+
+  main{max-width:860px;margin:0 auto;padding:20px 16px}
+  .page{display:none}
+  .page.active{display:block}
+
+  /* HOME */
+  .home-grid{display:grid;grid-template-columns:1fr 280px;gap:20px}
+  .front-story{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:16px}
+  .front-story-kicker{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);font-weight:500;margin-bottom:4px}
+  .front-story h2{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;line-height:1.2;margin-bottom:8px}
+  .front-story p{font-size:13px;color:var(--muted);line-height:1.6}
+  .story-meta{font-size:11px;color:var(--muted);margin-top:8px}
+  .story-card{border-bottom:1px solid var(--border);padding:12px 0;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+  .story-num{font-family:'Playfair Display',serif;font-size:22px;color:var(--border);font-weight:700;line-height:1;min-width:24px}
+  .story-card h4{font-family:'Playfair Display',serif;font-size:15px;line-height:1.3;margin-bottom:3px}
+  .story-card p{font-size:12px;color:var(--muted)}
+  .sidebar-box{border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:16px}
+  .sidebar-title{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:10px}
+  .trend-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;border-bottom:1px solid #f0f0ee}
+  .trend-tag{font-size:10px;background:#f0f0ee;padding:2px 7px;border-radius:3px;color:var(--muted)}
+  .hot-badge{background:var(--red);color:#fff;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:500}
+
+  /* GOSSIP */
+  .gossip-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .filter-pill{border:1px solid var(--border);background:var(--card);font-size:12px;padding:4px 12px;border-radius:20px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--muted);transition:all .15s}
+  .filter-pill.active,.filter-pill:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .gossip-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px}
+  .gossip-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .gossip-author{font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px}
+  .anon-badge{background:#f0f0ee;color:var(--muted);font-size:10px;padding:1px 7px;border-radius:10px}
+  .gossip-time{font-size:11px;color:var(--muted)}
+  .gossip-text{font-size:13px;line-height:1.6;color:var(--ink);margin-bottom:10px}
+  .gossip-tag{font-size:10px;background:var(--red-light);color:var(--red-dark);padding:2px 8px;border-radius:3px;font-weight:500;margin-right:4px}
+  .reactions{display:flex;gap:6px;margin-top:10px}
+  .reaction-btn{border:1px solid var(--border);background:#fafafa;font-size:12px;padding:3px 10px;border-radius:20px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:3px}
+  .reaction-btn:hover{background:#f0f0ee;border-color:#ccc}
+  .reaction-btn.voted{background:var(--red-light);border-color:var(--red);color:var(--red-dark)}
+  .gossip-submit{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:20px}
+  .gossip-submit h3{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:10px}
+  .form-row{margin-bottom:10px}
+  .form-row label{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+  .form-row input,.form-row textarea,.form-row select{width:100%;border:1px solid var(--border);border-radius:5px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--ink);outline:none}
+  .form-row input:focus,.form-row textarea:focus{border-color:#999}
+  .form-row textarea{resize:vertical;min-height:70px}
+  .anon-toggle{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-bottom:10px}
+  .toggle-switch{width:36px;height:20px;background:#ccc;border-radius:10px;position:relative;transition:.2s;cursor:pointer;flex-shrink:0}
+  .toggle-switch.on{background:var(--red)}
+  .toggle-switch::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.2s}
+  .toggle-switch.on::after{left:18px}
+  .btn-primary{background:var(--red);color:#fff;border:none;padding:9px 20px;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:opacity .15s}
+  .btn-primary:hover{opacity:.85}
+  .btn-outline{background:none;border:1px solid var(--border);padding:7px 16px;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;color:var(--muted);transition:all .15s}
+  .btn-outline:hover{border-color:#999;color:var(--ink)}
+
+  /* GALLERY */
+  .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+  .gallery-item{border-radius:6px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:transform .15s}
+  .gallery-item:hover{transform:scale(1.02)}
+  .gallery-thumb{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:36px;background:#f5f5f3}
+  .gallery-caption{padding:8px 10px;font-size:11px;color:var(--muted);background:var(--card)}
+  .gallery-caption strong{display:block;font-size:12px;color:var(--ink);margin-bottom:1px}
+  .upload-zone{border:2px dashed var(--border);border-radius:8px;padding:28px;text-align:center;margin-bottom:20px;cursor:pointer;transition:all .15s}
+  .upload-zone:hover{border-color:#999;background:#f5f5f3}
+  .upload-zone i{font-size:28px;color:var(--muted);display:block;margin-bottom:8px}
+  .upload-zone p{font-size:13px;color:var(--muted)}
+
+  /* VIDEOS */
+  .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .video-card{border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:transform .15s;background:var(--card)}
+  .video-card:hover{transform:translateY(-2px)}
+  .video-thumb{width:100%;aspect-ratio:16/9;background:#1a1a1a;display:flex;align-items:center;justify-content:center;position:relative;font-size:40px}
+  .play-btn{width:44px;height:44px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;position:absolute}
+  .play-btn i{font-size:18px;color:var(--red);margin-left:3px}
+  .video-info{padding:10px 12px}
+  .video-info h4{font-size:13px;font-weight:500;margin-bottom:3px}
+  .video-info p{font-size:11px;color:var(--muted)}
+
+  /* LOGIN */
+  .auth-wrap{max-width:380px;margin:0 auto}
+  .auth-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:28px}
+  .auth-card h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:4px}
+  .auth-card p{font-size:13px;color:var(--muted);margin-bottom:20px}
+  .auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px}
+  .auth-tab{flex:1;padding:8px;text-align:center;font-size:13px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+  .auth-tab.active{color:var(--red);border-bottom-color:var(--red);font-weight:500}
+
+  /* ADMIN */
+  .admin-sidebar{width:200px;flex-shrink:0;border-right:1px solid var(--border);padding-right:20px}
+  .admin-main{flex:1}
+  .admin-wrap{display:flex;gap:24px}
+  .admin-nav-item{padding:8px 12px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--muted);margin-bottom:2px;display:flex;align-items:center;gap:8px;transition:all .15s}
+  .admin-nav-item:hover,.admin-nav-item.active{background:#f0f0ee;color:var(--ink)}
+  .admin-nav-item.active{color:var(--red);font-weight:500}
+  .admin-section{display:none}
+  .admin-section.active{display:block}
+  .admin-section h3{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  .queue-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px}
+  .queue-item-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+  .queue-item-head h4{font-size:14px;font-weight:500}
+  .status-badge{font-size:10px;padding:2px 8px;border-radius:3px;font-weight:500}
+  .status-pending{background:#FEF3CD;color:#856404}
+  .status-approved{background:#D1E7DD;color:#0F5132}
+  .status-rejected{background:var(--red-light);color:var(--red-dark)}
+  .queue-actions{display:flex;gap:6px;margin-top:10px}
+  .btn-sm{font-size:12px;padding:4px 12px;border-radius:4px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:opacity .15s}
+  .btn-sm:hover{opacity:.8}
+  .btn-approve{background:#198754;color:#fff}
+  .btn-reject{background:var(--red);color:#fff}
+  .btn-delete{background:#6c757d;color:#fff}
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+  .stat-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+  .stat-box .num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--red)}
+  .stat-box .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .logged-in-bar{background:var(--red-light);border:1px solid #f5c6c6;border-radius:6px;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-size:13px}
+
+  /* story submit */
+  .idea-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:20px}
+  .idea-card h3{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:10px}
+  .tag-select{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .tag-btn{border:1px solid var(--border);background:none;font-size:11px;padding:3px 10px;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--muted);transition:all .15s}
+  .tag-btn.active,.tag-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:10px 18px;border-radius:6px;font-size:13px;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:999}
+  .toast.show{opacity:1;transform:translateY(0)}
+  .divider{text-align:center;font-size:11px;color:var(--muted);margin:12px 0;position:relative}
+  .divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border)}
+  .divider span{background:var(--card);padding:0 10px;position:relative}
+  .comment-item{border-top:1px solid var(--border);padding:10px 0;font-size:13px}
+  .comment-item strong{font-size:12px;font-weight:500;margin-right:8px}
+  .comment-item span{color:var(--muted)}
+  .story-expanded{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:20px;display:none}
+  .story-expanded.open{display:block}
+  .story-expanded h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:8px}
+  .story-expanded p{font-size:14px;line-height:1.7;color:var(--ink);margin-bottom:16px}
+</style>
+
+<div class="ticker-wrap">
+  <div class="ticker-label"><i class="ti ti-bolt" aria-hidden="true"></i> &nbsp;Breaking</div>
+  <div class="ticker-track" id="ticker">
+    <span>Cafeteria mystery smell finally identified — it was Kyle</span>
+    <span>Drama club auditions draw record 47 students</span>
+    <span>Someone left a love note in locker 114 — is it yours?</span>
+    <span>Gym teacher Mr. Kovács seen crying after dodgeball loss</span>
+    <span>Senior prom theme leaked: "A Night in Paris… or Toledo"</span>
+    <span>Cafeteria mystery smell finally identified — it was Kyle</span>
+    <span>Drama club auditions draw record 47 students</span>
+    <span>Someone left a love note in locker 114 — is it yours?</span>
+    <span>Gym teacher Mr. Kovács seen crying after dodgeball loss</span>
+    <span>Senior prom theme leaked: "A Night in Paris… or Toledo"</span>
+  </div>
+</div>
+
+<header>
+  <div class="masthead">
+    <div class="masthead-date" id="hdr-date">Thursday, May 29, 2026</div>
+    <div class="masthead-title">The School<span>☆</span>Scandal</div>
+    <div class="masthead-tagline">All the Drama. All the Tea. All the Time.</div>
+  </div>
+  <nav>
+    <button class="nav-btn active" onclick="goTo('home',this)"><i class="ti ti-home" aria-hidden="true"></i> Front Page</button>
+    <button class="nav-btn" onclick="goTo('gossip',this)"><i class="ti ti-message-2" aria-hidden="true"></i> Gossip Wall</button>
+    <button class="nav-btn" onclick="goTo('gallery',this)"><i class="ti ti-camera" aria-hidden="true"></i> Paparazzi</button>
+    <button class="nav-btn" onclick="goTo('videos',this)"><i class="ti ti-video" aria-hidden="true"></i> Videos</button>
+    <button class="nav-btn" onclick="goTo('submit',this)"><i class="ti ti-bulb" aria-hidden="true"></i> Tips</button>
+    <button class="nav-btn" onclick="goTo('login',this)" id="login-nav-btn"><i class="ti ti-user" aria-hidden="true"></i> Login</button>
+    <button class="nav-btn" onclick="goTo('admin',this)" id="admin-nav-btn" style="display:none"><i class="ti ti-settings" aria-hidden="true"></i> Admin</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="home-grid">
+    <div>
+      <div id="story-expanded-area"></div>
+      <div class="front-story">
+        <div class="front-story-kicker">Exclusive</div>
+        <h2>Principal Seen Leaving School Early — Sub Refuses to Explain</h2>
+        <p>Multiple witnesses reported seeing Principal Horváth slip out through the side exit at 1:47 PM on Tuesday. The substitute who covered 5B claims to "know nothing." Students aren't buying it.</p>
+        <div class="story-meta">By Anonymous Tipster · 2 hours ago · <span class="gossip-tag" style="margin-left:4px">#teachers</span><span class="gossip-tag">#mystery</span></div>
+      </div>
+      <div id="story-list">
+        <div class="story-card" onclick="expandStory(0)">
+          <div class="story-num">01</div>
+          <div><h4>Cafeteria "secret menu" spotted — but who's running it?</h4><p style="font-size:12px;color:var(--muted)">Sources say a laminated list is being passed under desks...</p></div>
+        </div>
+        <div class="story-card" onclick="expandStory(1)">
+          <div class="story-num">02</div>
+          <div><h4>End-of-year trip location may have leaked</h4><p style="font-size:12px;color:var(--muted)">A teacher left a tab open on the projector. We saw everything.</p></div>
+        </div>
+        <div class="story-card" onclick="expandStory(2)">
+          <div class="story-num">03</div>
+          <div><h4>The drama club's "secret casting" controversy, explained</h4><p style="font-size:12px;color:var(--muted)">Why were auditions held at 7am on a Wednesday?</p></div>
+        </div>
+        <div class="story-card" onclick="expandStory(3)">
+          <div class="story-num">04</div>
+          <div><h4>Locker 212 has been locked for three years. No one knows why.</h4><p style="font-size:12px;color:var(--muted)">We asked. The janitor looked nervous.</p></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sidebar-box">
+        <div class="sidebar-title"><i class="ti ti-flame" aria-hidden="true"></i> Trending Now</div>
+        <div class="trend-item"><span>#romance</span><span class="hot-badge">HOT</span></div>
+        <div class="trend-item"><span>#cafeteria</span><span class="trend-tag">142 posts</span></div>
+        <div class="trend-item"><span>#teachers</span><span class="trend-tag">98 posts</span></div>
+        <div class="trend-item"><span>#sports</span><span class="trend-tag">76 posts</span></div>
+        <div class="trend-item"><span>#drama-club</span><span class="trend-tag">61 posts</span></div>
+        <div class="trend-item" style="border:none"><span>#mystery</span><span class="trend-tag">44 posts</span></div>
+      </div>
+      <div class="sidebar-box">
+        <div class="sidebar-title"><i class="ti ti-trophy" aria-hidden="true"></i> Most Reacted</div>
+        <div class="trend-item"><span style="font-size:12px">Kyle's cafeteria smell</span><span>💀 204</span></div>
+        <div class="trend-item"><span style="font-size:12px">Locker 114 love note</span><span>🔥 189</span></div>
+        <div class="trend-item" style="border:none"><span style="font-size:12px">Prom theme leak</span><span>👀 147</span></div>
+      </div>
+      <div class="sidebar-box">
+        <div class="sidebar-title"><i class="ti ti-camera" aria-hidden="true"></i> Latest Snaps</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div style="aspect-ratio:1;background:#f5f5f3;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:24px">🎭</div>
+          <div style="aspect-ratio:1;background:#f5f5f3;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:24px">🍕</div>
+          <div style="aspect-ratio:1;background:#f5f5f3;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:24px">📚</div>
+          <div style="aspect-ratio:1;background:#f5f5f3;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:24px">⚽</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GOSSIP -->
+<div class="page" id="page-gossip">
+  <div id="logged-in-banner" style="display:none" class="logged-in-bar">
+    <span>Posting as <strong id="posting-as"></strong></span>
+    <label class="anon-toggle" style="margin-bottom:0">
+      <span style="margin-right:4px">Post anonymously</span>
+      <div class="toggle-switch" id="anon-toggle-gossip" onclick="toggleAnon(this)"></div>
+    </label>
+  </div>
+  <div class="gossip-submit" id="gossip-form-wrap">
+    <h3>Spill the Tea</h3>
+    <div id="gossip-login-prompt" style="display:none;font-size:13px;color:var(--muted);padding:10px 0">
+      <a href="#" onclick="goTo('login',document.querySelector('.nav-btn:nth-child(6)'))" style="color:var(--red)">Log in</a> to post gossip.
+    </div>
+    <div id="gossip-form-fields">
+      <div class="form-row">
+        <label>Your gossip</label>
+        <textarea id="gossip-text" placeholder="What did you see? What did you hear? No names needed..."></textarea>
+      </div>
+      <div class="form-row">
+        <label>Tag it</label>
+        <div class="tag-select" id="gossip-tags">
+          <button class="tag-btn" onclick="toggleTag(this)">#romance</button>
+          <button class="tag-btn" onclick="toggleTag(this)">#cafeteria</button>
+          <button class="tag-btn" onclick="toggleTag(this)">#teachers</button>
+          <button class="tag-btn" onclick="toggleTag(this)">#sports</button>
+          <button class="tag-btn" onclick="toggleTag(this)">#drama-club</button>
+          <button class="tag-btn" onclick="toggleTag(this)">#mystery</button>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="submitGossip()"><i class="ti ti-send" aria-hidden="true"></i> Post Gossip</button>
+    </div>
+  </div>
+  <div class="gossip-filters">
+    <button class="filter-pill active" onclick="filterGossip('all',this)">All</button>
+    <button class="filter-pill" onclick="filterGossip('romance',this)">#romance</button>
+    <button class="filter-pill" onclick="filterGossip('cafeteria',this)">#cafeteria</button>
+    <button class="filter-pill" onclick="filterGossip('teachers',this)">#teachers</button>
+    <button class="filter-pill" onclick="filterGossip('sports',this)">#sports</button>
+    <button class="filter-pill" onclick="filterGossip('drama-club',this)">#drama-club</button>
+  </div>
+  <div id="gossip-feed"></div>
+</div>
+
+<!-- GALLERY -->
+<div class="page" id="page-gallery">
+  <div class="upload-zone" onclick="triggerUpload('photo')">
+    <i class="ti ti-camera-plus" aria-hidden="true" style="font-size:28px;color:var(--muted);display:block;margin-bottom:8px;text-align:center"></i>
+    <p style="font-size:13px;color:var(--muted);text-align:center">Click to upload a photo · PNG, JPG up to 10MB</p>
+  </div>
+  <div class="gallery-grid" id="gallery-grid"></div>
+</div>
+
+<!-- VIDEOS -->
+<div class="page" id="page-videos">
+  <div class="upload-zone" onclick="triggerUpload('video')">
+    <i class="ti ti-video-plus" aria-hidden="true" style="font-size:28px;color:var(--muted);display:block;margin-bottom:8px;text-align:center"></i>
+    <p style="font-size:13px;color:var(--muted);text-align:center">Click to upload a video · MP4, MOV up to 500MB</p>
+  </div>
+  <div class="video-grid" id="video-grid"></div>
+</div>
+
+<!-- TIPS -->
+<div class="page" id="page-submit">
+  <div class="idea-card">
+    <h3><i class="ti ti-bulb" aria-hidden="true" style="color:var(--red)"></i> Submit a Story Tip</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Got a lead? Seen something suspicious? Tell us and our editors will investigate.</p>
+    <div id="tip-login-prompt" style="display:none;font-size:13px;color:var(--muted);padding:10px 0;border-top:1px solid var(--border)">
+      <a href="#" onclick="goTo('login',document.querySelector('.nav-btn:nth-child(6)'))" style="color:var(--red)">Log in</a> to submit a story tip.
+    </div>
+    <div id="tip-form-fields">
+      <div class="form-row">
+        <label>Headline / One-liner</label>
+        <input type="text" id="tip-headline" placeholder="e.g. The teachers have a secret WhatsApp group">
+      </div>
+      <div class="form-row">
+        <label>Details</label>
+        <textarea id="tip-details" style="min-height:100px" placeholder="Tell us everything you know. The more detail the better. This goes directly to our editors."></textarea>
+      </div>
+      <div class="form-row">
+        <label>Category</label>
+        <div class="tag-select" id="tip-tags">
+          <button class="tag-btn" onclick="toggleTag(this)">#romance</button>
+          <button class="tag-btn" onclick="toggleTag(this)">#cafeteria</button>
+          <button class="tag-btn" onclick="toggleTag(this)">#teachers</button>
+          <button class="tag-btn" onclick="toggleTag(this)">#sports</button>
+          <button class="tag-btn" onclick="toggleTag(this)">#drama-club</button>
+          <button class="tag-btn" onclick="toggleTag(this)">#mystery</button>
+        </div>
+      </div>
+      <label class="anon-toggle">
+        <div class="toggle-switch on" id="tip-anon" onclick="toggleAnon(this)"></div>
+        <span>Submit anonymously (recommended)</span>
+      </label>
+      <button class="btn-primary" onclick="submitTip()"><i class="ti ti-send" aria-hidden="true"></i> Submit Tip</button>
+    </div>
+  </div>
+  <div id="my-tips-section" style="display:none">
+    <h3 style="font-family:'Playfair Display',serif;font-size:18px;margin-bottom:12px">My Submitted Tips</h3>
+    <div id="my-tips-list"></div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="page" id="page-login">
+  <div class="auth-wrap">
+    <div id="logged-in-card" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:28px;text-align:center">
+      <div style="font-size:40px;margin-bottom:12px">👤</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px" id="welcome-msg">Welcome back!</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px" id="user-info-msg"></p>
+      <button class="btn-primary" onclick="logout()"><i class="ti ti-logout" aria-hidden="true"></i> Log Out</button>
+    </div>
+    <div class="auth-card" id="auth-card">
+      <h2>Join the Scandal</h2>
+      <p>One account per student. No fake names.</p>
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchTab('login')">Log In</div>
+        <div class="auth-tab" onclick="switchTab('register')">Create Account</div>
+      </div>
+      <div id="login-form">
+        <div class="form-row"><label>Username</label><input type="text" id="login-user" placeholder="Your username"></div>
+        <div class="form-row"><label>Password</label><input type="password" id="login-pass" placeholder="Password"></div>
+        <button class="btn-primary" style="width:100%;margin-top:4px" onclick="doLogin()">Log In</button>
+        <div style="margin-top:10px;font-size:12px;color:var(--muted);text-align:center">
+          <a href="#" onclick="switchTab('register')" style="color:var(--red)">No account? Create one</a>
+        </div>
+        <div class="divider" style="margin-top:16px"><span>or try demo</span></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn-outline" style="flex:1;font-size:12px" onclick="quickLogin('student')"><i class="ti ti-user" aria-hidden="true"></i> Student Demo</button>
+          <button class="btn-outline" style="flex:1;font-size:12px" onclick="quickLogin('admin')"><i class="ti ti-settings" aria-hidden="true"></i> Admin Demo</button>
+        </div>
+      </div>
+      <div id="register-form" style="display:none">
+        <div class="form-row"><label>Full Name</label><input type="text" id="reg-name" placeholder="Your real name (private)"></div>
+        <div class="form-row"><label>Username</label><input type="text" id="reg-user" placeholder="How you'll appear (if not anon)"></div>
+        <div class="form-row"><label>Password</label><input type="password" id="reg-pass" placeholder="Min. 6 characters"></div>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:12px"><i class="ti ti-info-circle" aria-hidden="true"></i> You can only create one account. Choose your username wisely!</p>
+        <button class="btn-primary" style="width:100%" onclick="doRegister()">Create My Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="page-admin">
+  <div id="admin-lock" style="text-align:center;padding:40px">
+    <i class="ti ti-lock" aria-hidden="true" style="font-size:36px;color:var(--muted);display:block;margin-bottom:12px"></i>
+    <p style="color:var(--muted)">Admin access only. <a href="#" onclick="quickLogin('admin')" style="color:var(--red)">Log in as admin</a> to continue.</p>
+  </div>
+  <div id="admin-panel" style="display:none">
+    <div class="admin-wrap">
+      <div class="admin-sidebar">
+        <div class="admin-nav-item active" onclick="adminNav('dashboard',this)"><i class="ti ti-dashboard" aria-hidden="true"></i> Dashboard</div>
+        <div class="admin-nav-item" onclick="adminNav('stories',this)"><i class="ti ti-file-text" aria-hidden="true"></i> Publish Story</div>
+        <div class="admin-nav-item" onclick="adminNav('tips',this)"><i class="ti ti-inbox" aria-hidden="true"></i> Story Tips <span id="tip-count-badge" style="background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px">3</span></div>
+        <div class="admin-nav-item" onclick="adminNav('moderation',this)"><i class="ti ti-shield" aria-hidden="true"></i> Moderation</div>
+        <div class="admin-nav-item" onclick="adminNav('users',this)"><i class="ti ti-users" aria-hidden="true"></i> Users</div>
+      </div>
+      <div class="admin-main">
+
+        <div class="admin-section active" id="admin-dashboard">
+          <h3>Dashboard</h3>
+          <div class="stat-row">
+            <div class="stat-box"><div class="num">247</div><div class="lbl">Users</div></div>
+            <div class="stat-box"><div class="num">38</div><div class="lbl">Gossip Posts</div></div>
+            <div class="stat-box"><div class="num" id="tip-stat">3</div><div class="lbl">Pending Tips</div></div>
+            <div class="stat-box"><div class="num">12</div><div class="lbl">Stories Up</div></div>
+          </div>
+          <p style="font-size:13px;color:var(--muted)">Welcome, Editor. You have <strong id="mod-count">2</strong> posts pending moderation and <strong id="tip-count">3</strong> story tips to review.</p>
+        </div>
+
+        <div class="admin-section" id="admin-stories">
+          <h3>Publish a Story</h3>
+          <div class="form-row"><label>Headline</label><input type="text" id="pub-headline" placeholder="The headline everyone will see"></div>
+          <div class="form-row"><label>Kicker / Category</label><input type="text" id="pub-kicker" placeholder="e.g. Exclusive, Breaking, Opinion"></div>
+          <div class="form-row"><label>Story body</label><textarea id="pub-body" style="min-height:140px" placeholder="Write the full story here..."></textarea></div>
+          <div class="form-row">
+            <label>Tags</label>
+            <div class="tag-select" id="pub-tags">
+              <button class="tag-btn" onclick="toggleTag(this)">#romance</button>
+              <button class="tag-btn" onclick="toggleTag(this)">#cafeteria</button>
+              <button class="tag-btn" onclick="toggleTag(this)">#teachers</button>
+              <button class="tag-btn" onclick="toggleTag(this)">#sports</button>
+              <button class="tag-btn" onclick="toggleTag(this)">#drama-club</button>
+              <button class="tag-btn" onclick="toggleTag(this)">#mystery</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-primary" onclick="publishStory()"><i class="ti ti-check" aria-hidden="true"></i> Publish to Front Page</button>
+            <button class="btn-outline" onclick="showToast('Saved as draft')"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save Draft</button>
+          </div>
+        </div>
+
+        <div class="admin-section" id="admin-tips">
+          <h3>Story Tips Inbox</h3>
+          <div id="tips-inbox"></div>
+        </div>
+
+        <div class="admin-section" id="admin-moderation">
+          <h3>Moderation Queue</h3>
+          <div id="mod-queue"></div>
+        </div>
+
+        <div class="admin-section" id="admin-users">
+          <h3>Registered Users</h3>
+          <div id="users-list"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const d=document;
+let currentUser=null;
+const users={student:{name:'Alex Kovács',username:'alex_k',role:'student'},admin:{name:'Editor',username:'the_editor',role:'admin'}};
+const gossips=[
+  {id:1,text:'Someone in 10B has been writing love poems and leaving them in the library books. Three people have found one this week.',tags:['#romance'],reactions:{fire:24,eyes:18,skull:6},anon:true,user:'anon',time:'1h ago'},
+  {id:2,text:'The biology teacher definitely has a dog named "Photosynthesis." I heard him on the phone.',tags:['#teachers'],reactions:{fire:41,eyes:33,skull:12},anon:false,user:'nora_m',time:'3h ago'},
+  {id:3,text:'The secret cafeteria menu is real. I got a "special grilled cheese" by saying the codeword. I will not say what it is.',tags:['#cafeteria','#mystery'],reactions:{fire:88,eyes:72,skull:30},anon:true,user:'anon',time:'5h ago'},
+  {id:4,text:'Basketball team lost but someone snuck confetti into the gymnasium ceiling tiles. It rained confetti at 2pm for no reason.',tags:['#sports'],reactions:{fire:57,eyes:44,skull:8},anon:false,user:'bence_99',time:'Yesterday'},
+];
+const tips=[
+  {id:1,headline:'Teachers have a WhatsApp group called "The Survivors"',details:'My cousin is a teacher here and let it slip. Apparently they share photos of students sleeping in class.',tags:['#teachers'],user:'anon',time:'2h ago',status:'pending'},
+  {id:2,headline:'Prom committee is rigged',details:'The same friend group has won prom king/queen 3 years in a row. Someone knows something.',tags:['#romance'],user:'vera_t',time:'Yesterday',status:'pending'},
+  {id:3,headline:'Locker 212 mystery',details:"Janitor Gábor went pale when I asked. Said it's 'administrative' and walked away very fast.",tags:['#mystery'],user:'anon',time:'3 days ago',status:'pending'},
+];
+const modQueue=[
+  {id:1,text:"I heard the history teacher grades based on who brings him coffee.",tags:['#teachers'],user:'mark_b',status:'pending'},
+  {id:2,text:"Two 11th graders were seen holding hands behind the gym. You know who you are. 👀",tags:['#romance'],user:'anon',status:'pending'},
+];
+const gallery=[
+  {emoji:'🎭',caption:'Drama club rehearsal',sub:'Uploaded by nora_m'},
+  {emoji:'🍕',caption:'Cafeteria secret menu item??',sub:'Uploaded by anon'},
+  {emoji:'📚',caption:'Someone left 47 sticky notes',sub:'Uploaded by alex_k'},
+  {emoji:'⚽',caption:'Post-match chaos',sub:'Uploaded by bence_99'},
+  {emoji:'🎉',caption:'Birthday ambush in hallway',sub:'Uploaded by vera_t'},
+  {emoji:'😂',caption:'Teacher meme board caught on cam',sub:'Uploaded by anon'},
+];
+const videos=[
+  {emoji:'🎭',title:'Drama auditions compilation',sub:'3:42 · Drama Club · 2 days ago'},
+  {emoji:'⚽',title:'The confetti incident — full footage',sub:'1:15 · Sports · Yesterday'},
+  {emoji:'🎤',title:'Talent show surprise act',sub:'5:20 · Events · 3 days ago'},
+  {emoji:'😂',title:'Science experiment goes wrong',sub:'0:48 · Classrooms · 4 days ago'},
+];
+const storyDetails=[
+  {headline:'Cafeteria "secret menu" spotted — but who\'s running it?',body:'Multiple students have confirmed the existence of a laminated list being passed discreetly under desks in the cafeteria. The list reportedly contains items not available on the official menu, including a "legendary grilled cheese" and something called "The 4th Period Special." We attempted to obtain a copy. We were told to "forget we saw anything."'},
+  {headline:'End-of-year trip location may have leaked',body:'On Tuesday, during 3rd period geography, Mr. Balogh minimized his browser just slightly too slowly. At least four students in the front row report seeing a booking confirmation for a destination that begins with the letter "B." Full investigation pending.'},
+  {headline:'The drama club\'s "secret casting" controversy',body:'Auditions for the spring play were announced via a single sticky note on the teachers\' lounge door at 7am on a Wednesday. Many students claim they never heard about them. The cast list features no surprises, which is itself suspicious.'},
+  {headline:'Locker 212 — a three-year mystery',body:'Locker 212, in the north corridor, has not been assigned to any student since records began. When our reporter asked the janitor about it, he went pale, said it was "administrative," and walked away rapidly. The combination lock is a different brand than all others on the hallway. Nobody knows what\'s inside.'},
+];
+
+function goTo(page,btn){
+  d.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  d.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  d.getElementById('page-'+page).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(page==='gossip')renderGossip('all');
+  if(page==='gallery')renderGallery();
+  if(page==='videos')renderVideos();
+  if(page==='admin')renderAdmin();
+  if(page==='submit')renderTips();
+  if(page==='login')renderLogin();
+}
+
+function renderGossip(filter){
+  let data=gossips.filter(g=>filter==='all'||g.tags.includes('#'+filter));
+  d.getElementById('gossip-feed').innerHTML=data.map(g=>`
+    <div class="gossip-card" id="gossip-${g.id}">
+      <div class="gossip-header">
+        <div class="gossip-author">
+          <i class="ti ti-user-circle" aria-hidden="true" style="font-size:18px;color:var(--muted)"></i>
+          ${g.anon?'<span>Anonymous</span><span class="anon-badge">anon</span>':`<span>${g.user}</span>`}
+        </div>
+        <span class="gossip-time">${g.time}</span>
+      </div>
+      <div class="gossip-text">${g.text}</div>
+      <div>${g.tags.map(t=>`<span class="gossip-tag">${t}</span>`).join('')}</div>
+      <div class="reactions">
+        <button class="reaction-btn" onclick="react(${g.id},'fire',this)">🔥 <span>${g.reactions.fire}</span></button>
+        <button class="reaction-btn" onclick="react(${g.id},'eyes',this)">👀 <span>${g.reactions.eyes}</span></button>
+        <button class="reaction-btn" onclick="react(${g.id},'skull',this)">💀 <span>${g.reactions.skull}</span></button>
+      </div>
+    </div>`).join('');
+  const banner=d.getElementById('logged-in-banner');
+  const formFields=d.getElementById('gossip-form-fields');
+  const loginPrompt=d.getElementById('gossip-login-prompt');
+  if(currentUser){banner.style.display='flex';d.getElementById('posting-as').textContent=currentUser.username;formFields.style.display='block';loginPrompt.style.display='none';}
+  else{banner.style.display='none';formFields.style.display='none';loginPrompt.style.display='block';}
+}
+
+function react(id,type,btn){
+  const g=gossips.find(x=>x.id===id);
+  const isVoted=btn.classList.contains('voted');
+  btn.classList.toggle('voted');
+  g.reactions[type]+=isVoted?-1:1;
+  btn.querySelector('span').textContent=g.reactions[type];
+}
+
+function filterGossip(tag,btn){
+  d.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGossip(tag);
+}
+
+function submitGossip(){
+  const txt=d.getElementById('gossip-text').value.trim();
+  if(!txt){showToast('Write something first!');return;}
+  const activeTags=[...d.querySelectorAll('#gossip-tags .tag-btn.active')].map(b=>b.textContent);
+  const anonOn=d.getElementById('anon-toggle-gossip').classList.contains('on');
+  gossips.unshift({id:Date.now(),text:txt,tags:activeTags.length?activeTags:['#mystery'],reactions:{fire:0,eyes:0,skull:0},anon:anonOn,user:currentUser?currentUser.username:'anon',time:'Just now'});
+  d.getElementById('gossip-text').value='';
+  d.querySelectorAll('#gossip-tags .tag-btn').forEach(b=>b.classList.remove('active'));
+  showToast('Gossip posted! 🔥 (awaiting mod approval)');
+  renderGossip('all');
+}
+
+function renderGallery(){
+  d.getElementById('gallery-grid').innerHTML=gallery.map(g=>`
+    <div class="gallery-item">
+      <div class="gallery-thumb">${g.emoji}</div>
+      <div class="gallery-caption"><strong>${g.caption}</strong>${g.sub}</div>
+    </div>`).join('');
+}
+
+function renderVideos(){
+  d.getElementById('video-grid').innerHTML=videos.map(v=>`
+    <div class="video-card">
+      <div class="video-thumb" style="font-size:44px">${v.emoji}<div class="play-btn"><i class="ti ti-player-play" aria-hidden="true"></i></div></div>
+      <div class="video-info"><h4>${v.title}</h4><p>${v.sub}</p></div>
+    </div>`).join('');
+}
+
+function renderLogin(){
+  if(currentUser){
+    d.getElementById('auth-card').style.display='none';
+    d.getElementById('logged-in-card').style.display='block';
+    d.getElementById('welcome-msg').textContent=`Welcome, ${currentUser.name}!`;
+    d.getElementById('user-info-msg').textContent=`@${currentUser.username} · ${currentUser.role==='admin'?'Editor / Admin':'Student'}`;
+  }else{
+    d.getElementById('auth-card').style.display='block';
+    d.getElementById('logged-in-card').style.display='none';
+  }
+}
+
+function renderTips(){
+  if(currentUser){
+    d.getElementById('tip-form-fields').style.display='block';
+    d.getElementById('tip-login-prompt').style.display='none';
+    d.getElementById('my-tips-section').style.display='block';
+    d.getElementById('my-tips-list').innerHTML='<p style="font-size:13px;color:var(--muted)">No tips submitted yet.</p>';
+  }else{
+    d.getElementById('tip-form-fields').style.display='none';
+    d.getElementById('tip-login-prompt').style.display='block';
+    d.getElementById('my-tips-section').style.display='none';
+  }
+}
+
+function renderAdmin(){
+  const lock=d.getElementById('admin-lock');
+  const panel=d.getElementById('admin-panel');
+  if(!currentUser||currentUser.role!=='admin'){lock.style.display='block';panel.style.display='none';return;}
+  lock.style.display='none';panel.style.display='block';
+  renderAdminSection('dashboard');
+}
+
+function renderAdminSection(sec){
+  if(sec==='tips'){
+    d.getElementById('tips-inbox').innerHTML=tips.map(t=>`
+      <div class="queue-item">
+        <div class="queue-item-head">
+          <h4>${t.headline}</h4>
+          <span class="status-badge status-${t.status}">${t.status}</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:6px">${t.details}</p>
+        <div>${t.tags.map(tag=>`<span class="gossip-tag">${tag}</span>`).join('')}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px">From: ${t.user} · ${t.time}</div>
+        <div class="queue-actions">
+          <button class="btn-sm btn-approve" onclick="approveTip(${t.id})"><i class="ti ti-check" aria-hidden="true"></i> Accept</button>
+          <button class="btn-sm btn-reject" onclick="rejectTip(${t.id})"><i class="ti ti-x" aria-hidden="true"></i> Reject</button>
+        </div>
+      </div>`).join('');
+  }
+  if(sec==='moderation'){
+    d.getElementById('mod-queue').innerHTML=modQueue.map(m=>`
+      <div class="queue-item">
+        <div class="queue-item-head">
+          <span class="gossip-author" style="font-size:13px"><i class="ti ti-user-circle" aria-hidden="true" style="font-size:16px;color:var(--muted)"></i> ${m.user}</span>
+          <span class="status-badge status-pending">pending review</span>
+        </div>
+        <div style="font-size:13px;margin:8px 0">"${m.text}"</div>
+        <div>${m.tags.map(tag=>`<span class="gossip-tag">${tag}</span>`).join('')}</div>
+        <div class="queue-actions">
+          <button class="btn-sm btn-approve" onclick="showToast('Post approved ✓')"><i class="ti ti-check" aria-hidden="true"></i> Approve</button>
+          <button class="btn-sm btn-reject" onclick="showToast('Post rejected')"><i class="ti ti-x" aria-hidden="true"></i> Reject</button>
+          <button class="btn-sm btn-delete" onclick="showToast('Post deleted')"><i class="ti ti-trash" aria-hidden="true"></i> Delete</button>
+        </div>
+      </div>`).join('');
+  }
+  if(sec==='users'){
+    const sampleUsers=[
+      {username:'alex_k',name:'Alex Kovács',role:'student',posts:3},
+      {username:'nora_m',name:'Nóra Molnár',role:'student',posts:7},
+      {username:'bence_99',name:'Bence Tóth',role:'student',posts:2},
+      {username:'vera_t',name:'Vera Takács',role:'student',posts:5},
+    ];
+    d.getElementById('users-list').innerHTML=sampleUsers.map(u=>`
+      <div class="queue-item" style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:14px;font-weight:500">@${u.username}</div>
+          <div style="font-size:12px;color:var(--muted)">${u.name} · ${u.posts} posts</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn-sm btn-delete" onclick="showToast('User suspended')"><i class="ti ti-user-x" aria-hidden="true"></i> Suspend</button>
+        </div>
+      </div>`).join('');
+  }
+}
+
+function adminNav(sec,btn){
+  d.querySelectorAll('.admin-nav-item').forEach(b=>b.classList.remove('active'));
+  d.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  btn.classList.add('active');
+  d.getElementById('admin-'+sec).classList.add('active');
+  renderAdminSection(sec);
+}
+
+function approveTip(id){const t=tips.find(x=>x.id===id);if(t){t.status='approved';showToast('Tip accepted! Consider assigning to a story.');renderAdminSection('tips');}}
+function rejectTip(id){const t=tips.find(x=>x.id===id);if(t){t.status='rejected';showToast('Tip rejected.');renderAdminSection('tips');}}
+
+function publishStory(){
+  const h=d.getElementById('pub-headline').value.trim();
+  const b=d.getElementById('pub-body').value.trim();
+  if(!h||!b){showToast('Fill in headline and body!');return;}
+  showToast('Story published to front page! 📰');
+  d.getElementById('pub-headline').value='';
+  d.getElementById('pub-body').value='';
+  d.getElementById('pub-kicker').value='';
+}
+
+function submitTip(){
+  const h=d.getElementById('tip-headline').value.trim();
+  if(!h){showToast('Add a headline!');return;}
+  showToast('Tip sent to editors! 🕵️');
+  d.getElementById('tip-headline').value='';
+  d.getElementById('tip-details').value='';
+}
+
+function doLogin(){
+  const u=d.getElementById('login-user').value.trim();
+  const p=d.getElementById('login-pass').value;
+  if(!u||!p){showToast('Fill in username and password');return;}
+  if(u==='admin'&&p==='admin'){quickLogin('admin');return;}
+  currentUser={name:u,username:u,role:'student'};
+  showToast(`Welcome back, ${u}! 👋`);
+  updateNav();renderLogin();
+}
+
+function doRegister(){
+  const n=d.getElementById('reg-name').value.trim();
+  const u=d.getElementById('reg-user').value.trim();
+  const p=d.getElementById('reg-pass').value;
+  if(!n||!u||p.length<6){showToast('Fill all fields (password min 6 chars)');return;}
+  currentUser={name:n,username:u,role:'student'};
+  showToast(`Account created! Welcome, ${u} 🎉`);
+  updateNav();renderLogin();
+}
+
+function quickLogin(role){
+  currentUser=users[role];
+  showToast(role==='admin'?'Logged in as Editor 🛠️':`Welcome, ${currentUser.name}! 👋`);
+  updateNav();renderLogin();
+  if(role==='admin'){goTo('admin',d.getElementById('admin-nav-btn'));}
+}
+
+function logout(){
+  currentUser=null;
+  showToast('Logged out. Stay anonymous! 👻');
+  updateNav();renderLogin();
+}
+
+function updateNav(){
+  const adminBtn=d.getElementById('admin-nav-btn');
+  const loginBtn=d.getElementById('login-nav-btn');
+  if(currentUser){
+    adminBtn.style.display=currentUser.role==='admin'?'':'none';
+    loginBtn.innerHTML=`<i class="ti ti-user-check" aria-hidden="true"></i> @${currentUser.username}`;
+  }else{
+    adminBtn.style.display='none';
+    loginBtn.innerHTML=`<i class="ti ti-user" aria-hidden="true"></i> Login`;
+  }
+}
+
+function switchTab(tab){
+  d.getElementById('login-form').style.display=tab==='login'?'block':'none';
+  d.getElementById('register-form').style.display=tab==='register'?'block':'none';
+  d.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='login'?0:1)));
+}
+
+function toggleTag(btn){btn.classList.toggle('active');}
+function toggleAnon(el){el.classList.toggle('on');}
+function triggerUpload(type){showToast(`${type==='photo'?'Photo':'Video'} upload coming soon! 📤`);}
+
+function expandStory(idx){
+  const s=storyDetails[idx];
+  const area=d.getElementById('story-expanded-area');
+  const isOpen=area.innerHTML.includes(s.headline);
+  if(isOpen){area.innerHTML='';return;}
+  area.innerHTML=`<div class="story-expanded open">
+    <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);font-weight:500;margin-bottom:6px">Full Story</div>
+    <h2>${s.headline}</h2>
+    <p>${s.body}</p>
+    <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
+      <div style="font-size:12px;font-weight:500;margin-bottom:8px">Comments (2)</div>
+      <div class="comment-item"><strong>nora_m</strong><span>Wait the janitor thing is 100% true I saw this too</span></div>
+      <div class="comment-item"><strong>anon</strong><span>Investigating. Will report back.</span></div>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <input type="text" placeholder="Add a comment..." style="flex:1;border:1px solid var(--border);border-radius:5px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--ink)">
+        <button class="btn-primary" onclick="showToast('Comment posted!')">Post</button>
+      </div>
+    </div>
+  </div>`;
+  area.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function showToast(msg){
+  const t=d.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+d.getElementById('hdr-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+</script>
