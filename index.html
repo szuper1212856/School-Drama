@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The School Scandal</title>
-<link rel="preconnect" href="https:fonts.googleapis.com">
-<link href="https:fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https:cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 :root {
   --bg: #0a0a0f;
@@ -88,7 +88,7 @@ body::before{
   font-size:10px;
   letter-spacing:.04em;
 }
-.ticker-scroll span::before{content:" "}
+.ticker-scroll span::before{content:"// "}
 @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
 /* HEADER */
@@ -994,9 +994,9 @@ main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1
 <div class="toast" id="toast"></div>
 
 <script>
- 
- TRANSLATIONS
- 
+// ============================================================
+// TRANSLATIONS
+// ============================================================
 const LANG = {
   en: {
     tagline: "all the drama · all the time",
@@ -1161,28 +1161,28 @@ function applyTranslations(){
   document.title = 'The School★Scandal';
 }
 
- 
- DATA STORE (localStorage)
- 
+// ============================================================
+// DATA STORE (localStorage)
+// ============================================================
 function load(key, def){ try{ const v=localStorage.getItem(key); return v!==null?JSON.parse(v):def; }catch(e){ return def; } }
 function save(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
 
-let users    = load('tss_users', []);        {id, username, name, role, password, createdAt}
-let gossips  = load('tss_gossips', []);      {id, text, tags, reactions, anon, userId, username, time, status}
-let stories  = load('tss_stories', []);      {id, kicker, headline, body, tags, time, comments:[]}
-let tips     = load('tss_tips', []);         {id, headline, details, tags, anon, userId, username, time, status}
-let photos   = load('tss_photos', []);       {id, caption, dataUrl, userId, username, time, approved}
-let videos_  = load('tss_videos', []);       {id, title, dataUrl, userId, username, time, approved}
-let tickerItems = load('tss_ticker', []);    strings
+let users    = load('tss_users', []);       // {id, username, name, role, password, createdAt}
+let gossips  = load('tss_gossips', []);     // {id, text, tags, reactions, anon, userId, username, time, status}
+let stories  = load('tss_stories', []);     // {id, kicker, headline, body, tags, time, comments:[]}
+let tips     = load('tss_tips', []);        // {id, headline, details, tags, anon, userId, username, time, status}
+let photos   = load('tss_photos', []);      // {id, caption, dataUrl, userId, username, time, approved}
+let videos_  = load('tss_videos', []);      // {id, title, dataUrl, userId, username, time, approved}
+let tickerItems = load('tss_ticker', []);   // strings
 
 let currentUser = null;
 let currentPage = 'home';
 
 const TAGS = ['#romance','#cafeteria','#teachers','#sports','#drama-club','#mystery','#other'];
 
- 
- NAVIGATION
- 
+// ============================================================
+// NAVIGATION
+// ============================================================
 function goTo(page, btn){
   currentPage = page;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1209,9 +1209,9 @@ function refreshCurrentPage(){
   if(p==='admin')   renderAdmin();
 }
 
- 
- HOME
- 
+// ============================================================
+// HOME
+// ============================================================
 function renderHome(){
   const pub = stories.filter(s=>s.published);
   const featuredWrap = document.getElementById('featured-story-wrap');
@@ -1289,11 +1289,11 @@ function postComment(storyId){
   save('tss_stories',stories);
   input.value='';
   showToast(T('comment_posted'));
-  expandStory(storyId); expandStory(storyId);  re-render
+  expandStory(storyId); expandStory(storyId); // re-render
 }
 
 function renderSidebar(){
-   trending tags
+  // trending tags
   const tagCounts = {};
   gossips.filter(g=>g.status==='approved').forEach(g=>(g.tags||[]).forEach(t=>{tagCounts[t]=(tagCounts[t]||0)+1}));
   const sorted = Object.entries(tagCounts).sort((a,b)=>b[1]-a[1]).slice(0,6);
@@ -1302,7 +1302,7 @@ function renderSidebar(){
     <div class="trend-row"><span style="font-size:13px">${escHtml(tag)}</span><span class="trend-tag">${count}</span></div>`).join('') :
     `<p style="font-size:12px;color:var(--text3);text-align:center;padding:10px 0">—</p>`;
 
-   top gossip
+  // top gossip
   const topG = gossips.filter(g=>g.status==='approved')
     .map(g=>({...g,total:Object.values(g.reactions||{}).reduce((a,b)=>a+b,0)}))
     .sort((a,b)=>b.total-a.total).slice(0,3);
@@ -1313,7 +1313,7 @@ function renderSidebar(){
       <span style="font-size:12px">🔥 ${g.total}</span>
     </div>`).join('') : `<p style="font-size:12px;color:var(--text3);text-align:center;padding:10px 0">—</p>`;
 
-   gallery preview
+  // gallery preview
   const gpw = document.getElementById('gallery-preview-widget');
   if(gpw){
     const approved = photos.filter(p=>p.approved).slice(0,4);
@@ -1323,7 +1323,7 @@ function renderSidebar(){
       </div>`).join('') || '<p style="font-size:11px;color:var(--text3);grid-column:span 2;text-align:center;padding:10px 0">—</p>';
   }
 
-   ticker
+  // ticker
   const tbar = document.getElementById('ticker-bar');
   const tscroll = document.getElementById('ticker-scroll');
   if(tickerItems.length){
@@ -1333,13 +1333,13 @@ function renderSidebar(){
   } else { tbar.style.display='none'; }
 }
 
- 
- GOSSIP
- 
+// ============================================================
+// GOSSIP
+// ============================================================
 let gossipFilter = 'all';
 
 function renderGossip(){
-   auth notice
+  // auth notice
   const notice = document.getElementById('gossip-auth-notice');
   const form = document.getElementById('gossip-form-card');
   if(currentUser){
@@ -1350,10 +1350,10 @@ function renderGossip(){
     form.style.display='none';
   }
 
-   tag row
+  // tag row
   buildTagRow('gossip-tag-row');
 
-   filter bar
+  // filter bar
   const fb = document.getElementById('gossip-filter-bar');
   const filters = ['all',...TAGS];
   fb.innerHTML = filters.map(f=>`
@@ -1361,7 +1361,7 @@ function renderGossip(){
       ${f==='all'?'All':escHtml(f)}
     </button>`).join('');
 
-   feed
+  // feed
   let filtered = gossips.filter(g=>g.status==='approved');
   if(gossipFilter!=='all') filtered=filtered.filter(g=>(g.tags||[]).includes(gossipFilter));
   filtered.sort((a,b)=>new Date(b.time)-new Date(a.time));
@@ -1398,7 +1398,7 @@ function renderGossipCard(g){
     </div>`;
 }
 
-let votes = load('tss_votes', {});  {gossipId: {fire,eyes,...}}
+let votes = load('tss_votes', {}); // {gossipId: {fire,eyes,...}}
 function hasVoted(gid,type){ return votes[gid]&&votes[gid][type]; }
 function react(gid, type, btn){
   const g = gossips.find(x=>x.id===gid); if(!g) return;
@@ -1434,9 +1434,9 @@ function submitGossip(){
   renderGossip();
 }
 
- 
- GALLERY
- 
+// ============================================================
+// GALLERY
+// ============================================================
 function renderGallery(){
   const uploadArea = document.getElementById('gallery-upload-area');
   if(currentUser){
@@ -1498,9 +1498,9 @@ function openLightbox(photoId){
   document.getElementById('lightbox').classList.add('open');
 }
 
- 
- VIDEOS
- 
+// ============================================================
+// VIDEOS
+// ============================================================
 function renderVideos(){
   const uploadArea = document.getElementById('video-upload-area');
   if(currentUser){
@@ -1565,9 +1565,9 @@ function openVideo(id){
   document.getElementById('video-modal-overlay').classList.add('open');
 }
 
- 
- TIPS
- 
+// ============================================================
+// TIPS
+// ============================================================
 function renderTips(){
   const notice = document.getElementById('tips-auth-notice');
   const form = document.getElementById('tips-form-card');
@@ -1614,9 +1614,9 @@ function submitTip(){
   renderTips();
 }
 
- 
- AUTH
- 
+// ============================================================
+// AUTH
+// ============================================================
 function renderLogin(){
   const loggedCard = document.getElementById('logged-in-card');
   const authCard = document.getElementById('auth-card');
@@ -1681,9 +1681,9 @@ function updateUserUI(){
   }
 }
 
- 
- ADMIN
- 
+// ============================================================
+// ADMIN
+// ============================================================
 function renderAdmin(){
   const lock = document.getElementById('admin-lock');
   const panel = document.getElementById('admin-panel');
@@ -1859,9 +1859,9 @@ function removeTickerItem(i){
   tickerItems.splice(i,1); save('tss_ticker',tickerItems); renderTickerList(); renderSidebar(); showToast(T('ticker_removed'));
 }
 
- 
- AUTO-CREATE ADMIN ACCOUNT
- 
+// ============================================================
+// AUTO-CREATE ADMIN ACCOUNT
+// ============================================================
 (function ensureAdmin(){
   if(!users.find(u=>u.role==='admin')){
     users.push({id:uid(),username:'admin',name:'Admin',role:'admin',password:simpleHash('admin123'),createdAt:new Date().toISOString()});
@@ -1869,6 +1869,9 @@ function removeTickerItem(i){
   }
 })();
 
+// ============================================================
+// HELPERS
+// ============================================================
 function uid(){ return Math.random().toString(36).slice(2,10)+Date.now().toString(36); }
 function escHtml(s){ const d=document.createElement('div'); d.textContent=String(s||''); return d.innerHTML; }
 function simpleHash(s){let h=0;for(let c of s){h=(h<<5)-h+c.charCodeAt(0);h|=0;}return h.toString(36);}
@@ -1881,7 +1884,7 @@ function relTime(iso){
 
 function buildTagRow(rowId){
   const row = document.getElementById(rowId); if(!row) return;
-  if(row.children.length) return;  already built
+  if(row.children.length) return; // already built
   row.innerHTML = TAGS.map(t=>`<button class="tag-pill" onclick="this.classList.toggle('active')">${escHtml(t)}</button>`).join('');
 }
 
@@ -1903,6 +1906,9 @@ function showToast(msg){
   toastTimer = setTimeout(()=>t.classList.remove('show'), 3000);
 }
 
+// ============================================================
+// INIT
+// ============================================================
 applyTranslations();
 updateUserUI();
 renderHome();
