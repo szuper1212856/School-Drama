@@ -1,464 +1,973 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The School Scandal</title>
+<link rel="preconnect" href="https:fonts.googleapis.com">
+<link href="https:fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https:cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@400;500&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --red:#C0392B;--red-light:#FAECEB;--red-dark:#7B241C;
-    --ink:#1a1a1a;--muted:#666;--border:#e0e0e0;
-    --bg:#FAFAF8;--card:#fff;
-    --gold:#B8860B;
-  }
-  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
-  .ticker-wrap{background:var(--red);color:#fff;overflow:hidden;height:32px;display:flex;align-items:center}
-  .ticker-label{background:#7B241C;padding:0 14px;height:100%;display:flex;align-items:center;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
-  .ticker-track{display:flex;gap:48px;animation:scroll 28s linear infinite;white-space:nowrap;padding-left:32px}
-  .ticker-track span{font-size:12px;opacity:.95}
-  .ticker-track span::before{content:"★ ";opacity:.6}
-  @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+:root {
+  --bg: #0a0a0f;
+  --bg2: #0f0f18;
+  --bg3: #14141f;
+  --bg4: #1a1a28;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --accent: #e63946;
+  --accent2: #ff6b6b;
+  --accent-glow: rgba(230,57,70,0.18);
+  --cyan: #00d4ff;
+  --cyan-dim: rgba(0,212,255,0.12);
+  --text: #f0f0f5;
+  --text2: #a0a0b8;
+  --text3: #606078;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+  --radius: 6px;
+  --radius-lg: 10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(230,57,70,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 10% 80%, rgba(0,212,255,0.04) 0%, transparent 50%);
+  pointer-events:none;
+  z-index:0;
+}
 
-  header{border-bottom:3px double #1a1a1a;padding:0 20px}
-  .masthead{text-align:center;padding:18px 0 10px;border-bottom:1px solid #e0e0e0;margin-bottom:10px}
-  .masthead-date{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
-  .masthead-title{font-family:'Playfair Display',serif;font-size:42px;font-weight:900;letter-spacing:-1px;line-height:1;color:var(--ink)}
-  .masthead-title span{color:var(--red)}
-  .masthead-tagline{font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
-  nav{display:flex;justify-content:center;gap:0;padding-bottom:10px}
-  .nav-btn{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:6px 14px;cursor:pointer;color:var(--muted);border-radius:4px;transition:all .15s;font-weight:500}
-  .nav-btn:hover,.nav-btn.active{color:var(--ink);background:#f0f0ee}
-  .nav-btn.active{color:var(--red);font-weight:500}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px}
 
-  main{max-width:860px;margin:0 auto;padding:20px 16px}
-  .page{display:none}
-  .page.active{display:block}
+/* TICKER */
+.ticker-bar{
+  background:var(--accent);
+  height:30px;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  position:relative;
+  z-index:100;
+}
+.ticker-label{
+  background:rgba(0,0,0,0.4);
+  height:100%;
+  padding:0 14px;
+  display:flex;
+  align-items:center;
+  font-family:var(--font-mono);
+  font-size:9px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  flex-shrink:0;
+  border-right:1px solid rgba(255,255,255,0.2);
+}
+.ticker-scroll{
+  display:flex;
+  gap:60px;
+  animation:ticker 35s linear infinite;
+  white-space:nowrap;
+  padding-left:24px;
+  font-family:var(--font-mono);
+  font-size:10px;
+  letter-spacing:.04em;
+}
+.ticker-scroll span::before{content:" "}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-  /* HOME */
-  .home-grid{display:grid;grid-template-columns:1fr 280px;gap:20px}
-  .front-story{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:16px}
-  .front-story-kicker{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);font-weight:500;margin-bottom:4px}
-  .front-story h2{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;line-height:1.2;margin-bottom:8px}
-  .front-story p{font-size:13px;color:var(--muted);line-height:1.6}
-  .story-meta{font-size:11px;color:var(--muted);margin-top:8px}
-  .story-card{border-bottom:1px solid var(--border);padding:12px 0;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
-  .story-num{font-family:'Playfair Display',serif;font-size:22px;color:var(--border);font-weight:700;line-height:1;min-width:24px}
-  .story-card h4{font-family:'Playfair Display',serif;font-size:15px;line-height:1.3;margin-bottom:3px}
-  .story-card p{font-size:12px;color:var(--muted)}
-  .sidebar-box{border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:16px}
-  .sidebar-title{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:10px}
-  .trend-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;border-bottom:1px solid #f0f0ee}
-  .trend-tag{font-size:10px;background:#f0f0ee;padding:2px 7px;border-radius:3px;color:var(--muted)}
-  .hot-badge{background:var(--red);color:#fff;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:500}
+/* HEADER */
+header{
+  border-bottom:1px solid var(--border2);
+  background:rgba(10,10,15,0.92);
+  backdrop-filter:blur(20px);
+  position:sticky;
+  top:0;
+  z-index:90;
+}
+.masthead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 24px;
+  border-bottom:1px solid var(--border);
+}
+.logo{
+  font-family:var(--font-display);
+  font-size:26px;
+  font-weight:800;
+  letter-spacing:-1px;
+  color:var(--text);
+  text-decoration:none;
+  line-height:1;
+}
+.logo span{color:var(--accent)}
+.logo small{
+  display:block;
+  font-family:var(--font-mono);
+  font-size:8px;
+  letter-spacing:.2em;
+  color:var(--text3);
+  font-weight:400;
+  margin-top:2px;
+  text-transform:uppercase;
+}
+.header-right{display:flex;align-items:center;gap:12px}
+.lang-toggle{
+  display:flex;
+  border:1px solid var(--border2);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.lang-btn{
+  background:none;
+  border:none;
+  color:var(--text3);
+  font-family:var(--font-mono);
+  font-size:10px;
+  letter-spacing:.08em;
+  padding:6px 10px;
+  cursor:pointer;
+  transition:all .2s;
+}
+.lang-btn.active{background:var(--accent);color:#fff}
+.user-chip{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  border-radius:var(--radius);
+  padding:6px 12px;
+  font-size:12px;
+  font-family:var(--font-mono);
+  color:var(--text2);
+  cursor:pointer;
+  transition:all .2s;
+  text-decoration:none;
+}
+.user-chip:hover{border-color:var(--accent);color:var(--accent)}
+.user-chip.logged-in{border-color:rgba(0,212,255,0.3);color:var(--cyan)}
+.online-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 6px var(--cyan);flex-shrink:0}
 
-  /* GOSSIP */
-  .gossip-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-  .filter-pill{border:1px solid var(--border);background:var(--card);font-size:12px;padding:4px 12px;border-radius:20px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--muted);transition:all .15s}
-  .filter-pill.active,.filter-pill:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .gossip-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px}
-  .gossip-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .gossip-author{font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px}
-  .anon-badge{background:#f0f0ee;color:var(--muted);font-size:10px;padding:1px 7px;border-radius:10px}
-  .gossip-time{font-size:11px;color:var(--muted)}
-  .gossip-text{font-size:13px;line-height:1.6;color:var(--ink);margin-bottom:10px}
-  .gossip-tag{font-size:10px;background:var(--red-light);color:var(--red-dark);padding:2px 8px;border-radius:3px;font-weight:500;margin-right:4px}
-  .reactions{display:flex;gap:6px;margin-top:10px}
-  .reaction-btn{border:1px solid var(--border);background:#fafafa;font-size:12px;padding:3px 10px;border-radius:20px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:3px}
-  .reaction-btn:hover{background:#f0f0ee;border-color:#ccc}
-  .reaction-btn.voted{background:var(--red-light);border-color:var(--red);color:var(--red-dark)}
-  .gossip-submit{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:20px}
-  .gossip-submit h3{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:10px}
-  .form-row{margin-bottom:10px}
-  .form-row label{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
-  .form-row input,.form-row textarea,.form-row select{width:100%;border:1px solid var(--border);border-radius:5px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--ink);outline:none}
-  .form-row input:focus,.form-row textarea:focus{border-color:#999}
-  .form-row textarea{resize:vertical;min-height:70px}
-  .anon-toggle{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-bottom:10px}
-  .toggle-switch{width:36px;height:20px;background:#ccc;border-radius:10px;position:relative;transition:.2s;cursor:pointer;flex-shrink:0}
-  .toggle-switch.on{background:var(--red)}
-  .toggle-switch::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.2s}
-  .toggle-switch.on::after{left:18px}
-  .btn-primary{background:var(--red);color:#fff;border:none;padding:9px 20px;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:opacity .15s}
-  .btn-primary:hover{opacity:.85}
-  .btn-outline{background:none;border:1px solid var(--border);padding:7px 16px;border-radius:5px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;color:var(--muted);transition:all .15s}
-  .btn-outline:hover{border-color:#999;color:var(--ink)}
+nav{
+  display:flex;
+  align-items:center;
+  padding:0 24px;
+  gap:2px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+nav::-webkit-scrollbar{display:none}
+.nav-btn{
+  background:none;
+  border:none;
+  color:var(--text3);
+  font-family:var(--font-display);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  padding:12px 14px;
+  cursor:pointer;
+  transition:color .2s;
+  white-space:nowrap;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-btn i{margin-right:5px;font-size:13px}
 
-  /* GALLERY */
-  .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-  .gallery-item{border-radius:6px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:transform .15s}
-  .gallery-item:hover{transform:scale(1.02)}
-  .gallery-thumb{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:36px;background:#f5f5f3}
-  .gallery-caption{padding:8px 10px;font-size:11px;color:var(--muted);background:var(--card)}
-  .gallery-caption strong{display:block;font-size:12px;color:var(--ink);margin-bottom:1px}
-  .upload-zone{border:2px dashed var(--border);border-radius:8px;padding:28px;text-align:center;margin-bottom:20px;cursor:pointer;transition:all .15s}
-  .upload-zone:hover{border-color:#999;background:#f5f5f3}
-  .upload-zone i{font-size:28px;color:var(--muted);display:block;margin-bottom:8px}
-  .upload-zone p{font-size:13px;color:var(--muted)}
+/* MAIN */
+main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1}
+.page{display:none}
+.page.active{display:block}
 
-  /* VIDEOS */
-  .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-  .video-card{border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:transform .15s;background:var(--card)}
-  .video-card:hover{transform:translateY(-2px)}
-  .video-thumb{width:100%;aspect-ratio:16/9;background:#1a1a1a;display:flex;align-items:center;justify-content:center;position:relative;font-size:40px}
-  .play-btn{width:44px;height:44px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;position:absolute}
-  .play-btn i{font-size:18px;color:var(--red);margin-left:3px}
-  .video-info{padding:10px 12px}
-  .video-info h4{font-size:13px;font-weight:500;margin-bottom:3px}
-  .video-info p{font-size:11px;color:var(--muted)}
+/* CARDS */
+.card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:20px;
+  transition:border-color .2s;
+}
+.card:hover{border-color:var(--border2)}
+.card-accent{border-left:2px solid var(--accent)}
 
-  /* LOGIN */
-  .auth-wrap{max-width:380px;margin:0 auto}
-  .auth-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:28px}
-  .auth-card h2{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:4px}
-  .auth-card p{font-size:13px;color:var(--muted);margin-bottom:20px}
-  .auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px}
-  .auth-tab{flex:1;padding:8px;text-align:center;font-size:13px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
-  .auth-tab.active{color:var(--red);border-bottom-color:var(--red);font-weight:500}
+/* SECTION HEADERS */
+.section-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+.section-head h2{
+  font-family:var(--font-display);
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:-.5px;
+}
+.section-head .kicker{
+  font-family:var(--font-mono);
+  font-size:9px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-left:auto;
+}
 
-  /* ADMIN */
-  .admin-sidebar{width:200px;flex-shrink:0;border-right:1px solid var(--border);padding-right:20px}
-  .admin-main{flex:1}
-  .admin-wrap{display:flex;gap:24px}
-  .admin-nav-item{padding:8px 12px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--muted);margin-bottom:2px;display:flex;align-items:center;gap:8px;transition:all .15s}
-  .admin-nav-item:hover,.admin-nav-item.active{background:#f0f0ee;color:var(--ink)}
-  .admin-nav-item.active{color:var(--red);font-weight:500}
-  .admin-section{display:none}
-  .admin-section.active{display:block}
-  .admin-section h3{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-  .queue-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px}
-  .queue-item-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
-  .queue-item-head h4{font-size:14px;font-weight:500}
-  .status-badge{font-size:10px;padding:2px 8px;border-radius:3px;font-weight:500}
-  .status-pending{background:#FEF3CD;color:#856404}
-  .status-approved{background:#D1E7DD;color:#0F5132}
-  .status-rejected{background:var(--red-light);color:var(--red-dark)}
-  .queue-actions{display:flex;gap:6px;margin-top:10px}
-  .btn-sm{font-size:12px;padding:4px 12px;border-radius:4px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:opacity .15s}
-  .btn-sm:hover{opacity:.8}
-  .btn-approve{background:#198754;color:#fff}
-  .btn-reject{background:var(--red);color:#fff}
-  .btn-delete{background:#6c757d;color:#fff}
-  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
-  .stat-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
-  .stat-box .num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--red)}
-  .stat-box .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-  .logged-in-bar{background:var(--red-light);border:1px solid #f5c6c6;border-radius:6px;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-size:13px}
+/* BADGES */
+.badge{
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:9px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:3px 8px;
+  border-radius:3px;
+  font-weight:700;
+}
+.badge-red{background:rgba(230,57,70,0.15);color:var(--accent2);border:1px solid rgba(230,57,70,0.3)}
+.badge-cyan{background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,0.2)}
+.badge-gray{background:var(--bg4);color:var(--text3);border:1px solid var(--border)}
+.badge-green{background:rgba(0,200,100,0.1);color:#00c864;border:1px solid rgba(0,200,100,0.25)}
+.badge-yellow{background:rgba(255,200,0,0.1);color:#ffc800;border:1px solid rgba(255,200,0,0.25)}
 
-  /* story submit */
-  .idea-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:20px}
-  .idea-card h3{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:10px}
-  .tag-select{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-  .tag-btn{border:1px solid var(--border);background:none;font-size:11px;padding:3px 10px;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--muted);transition:all .15s}
-  .tag-btn.active,.tag-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:10px 18px;border-radius:6px;font-size:13px;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:999}
-  .toast.show{opacity:1;transform:translateY(0)}
-  .divider{text-align:center;font-size:11px;color:var(--muted);margin:12px 0;position:relative}
-  .divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border)}
-  .divider span{background:var(--card);padding:0 10px;position:relative}
-  .comment-item{border-top:1px solid var(--border);padding:10px 0;font-size:13px}
-  .comment-item strong{font-size:12px;font-weight:500;margin-right:8px}
-  .comment-item span{color:var(--muted)}
-  .story-expanded{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:20px;display:none}
-  .story-expanded.open{display:block}
-  .story-expanded h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:8px}
-  .story-expanded p{font-size:14px;line-height:1.7;color:var(--ink);margin-bottom:16px}
+/* FORMS */
+.form-group{margin-bottom:14px}
+.form-group label{
+  display:block;
+  font-family:var(--font-mono);
+  font-size:9px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--text3);
+  margin-bottom:6px;
+}
+.form-group input,
+.form-group textarea,
+.form-group select{
+  width:100%;
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  border-radius:var(--radius);
+  padding:10px 12px;
+  font-family:var(--font-body);
+  font-size:13px;
+  color:var(--text);
+  outline:none;
+  transition:border-color .2s, box-shadow .2s;
+  -webkit-appearance:none;
+}
+.form-group input:focus,
+.form-group textarea:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-glow);
+}
+.form-group textarea{resize:vertical;min-height:80px;line-height:1.6}
+.form-group select{cursor:pointer}
+.form-group select option{background:var(--bg3)}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border:none;
+  border-radius:var(--radius);
+  padding:10px 18px;
+  font-family:var(--font-display);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all .2s;
+  text-decoration:none;
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{border-color:var(--text2);color:var(--text)}
+.btn-cyan{background:transparent;color:var(--cyan);border:1px solid rgba(0,212,255,0.3)}
+.btn-cyan:hover{background:var(--cyan-dim)}
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-danger{background:rgba(230,57,70,0.15);color:var(--accent);border:1px solid rgba(230,57,70,0.3)}
+.btn-danger:hover{background:var(--accent);color:#fff}
+.btn-success{background:rgba(0,200,100,0.12);color:#00c864;border:1px solid rgba(0,200,100,0.3)}
+.btn-success:hover{background:rgba(0,200,100,0.25)}
+
+/* TAG PILLS */
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag-pill{
+  background:none;
+  border:1px solid var(--border2);
+  border-radius:20px;
+  padding:4px 12px;
+  font-family:var(--font-mono);
+  font-size:10px;
+  color:var(--text3);
+  cursor:pointer;
+  transition:all .15s;
+}
+.tag-pill:hover,.tag-pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);cursor:pointer}
+.toggle{
+  width:38px;height:20px;
+  background:var(--bg4);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  position:relative;
+  cursor:pointer;
+  transition:.2s;
+  flex-shrink:0;
+}
+.toggle.on{background:var(--accent);border-color:var(--accent)}
+.toggle::after{
+  content:'';
+  position:absolute;
+  width:14px;height:14px;
+  background:#fff;
+  border-radius:50%;
+  top:2px;left:2px;
+  transition:.2s;
+}
+.toggle.on::after{left:20px}
+
+/* REACTIONS */
+.reactions{display:flex;gap:6px;flex-wrap:wrap}
+.rxn-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:4px 12px;
+  font-size:12px;
+  cursor:pointer;
+  transition:all .15s;
+  font-family:var(--font-mono);
+  color:var(--text2);
+}
+.rxn-btn:hover{border-color:var(--border2);color:var(--text)}
+.rxn-btn.voted{background:var(--accent-glow);border-color:rgba(230,57,70,0.4);color:var(--accent2)}
+
+/* GOSSIP CARD */
+.gossip-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:16px;
+  margin-bottom:10px;
+  transition:border-color .2s;
+}
+.gossip-card:hover{border-color:var(--border2)}
+.gossip-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.gossip-author{display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:11px;color:var(--text2)}
+.gossip-time{font-family:var(--font-mono);font-size:10px;color:var(--text3)}
+.gossip-body{font-size:14px;line-height:1.65;color:var(--text);margin-bottom:12px}
+.gossip-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+
+/* HOME GRID */
+.home-layout{display:grid;grid-template-columns:1fr 260px;gap:20px}
+.story-list .story-item{
+  border-bottom:1px solid var(--border);
+  padding:14px 0;
+  cursor:pointer;
+  transition:padding-left .2s;
+  display:grid;
+  grid-template-columns:32px 1fr;
+  gap:10px;
+  align-items:start;
+}
+.story-item:hover{padding-left:6px;border-color:var(--border2)}
+.story-num{font-family:var(--font-mono);font-size:18px;color:var(--text3);line-height:1;padding-top:2px}
+.story-item h4{font-family:var(--font-display);font-size:15px;font-weight:700;line-height:1.3;margin-bottom:4px;color:var(--text)}
+.story-item p{font-size:12px;color:var(--text3);line-height:1.5}
+.featured-story{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-top:2px solid var(--accent);
+  border-radius:var(--radius-lg);
+  padding:20px;
+  margin-bottom:16px;
+  cursor:pointer;
+  transition:border-color .2s;
+}
+.featured-story:hover{border-color:var(--accent)}
+.featured-story .kicker-tag{
+  font-family:var(--font-mono);
+  font-size:9px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:8px;
+}
+.featured-story h2{
+  font-family:var(--font-display);
+  font-size:22px;
+  font-weight:800;
+  line-height:1.2;
+  margin-bottom:10px;
+  color:var(--text);
+}
+.featured-story p{font-size:13px;color:var(--text2);line-height:1.65}
+
+/* SIDEBAR */
+.sidebar-widget{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:16px;
+  margin-bottom:14px;
+}
+.widget-title{
+  font-family:var(--font-mono);
+  font-size:9px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--text3);
+  margin-bottom:12px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+.trend-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.trend-row:last-child{border-bottom:none}
+.trend-tag{font-family:var(--font-mono);font-size:10px;color:var(--text3);background:var(--bg3);padding:2px 7px;border-radius:3px}
+
+/* GALLERY */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.gallery-item{
+  border-radius:var(--radius);
+  overflow:hidden;
+  border:1px solid var(--border);
+  cursor:pointer;
+  transition:all .2s;
+  background:var(--bg2);
+  aspect-ratio:4/3;
+  display:flex;
+  flex-direction:column;
+}
+.gallery-item:hover{border-color:var(--accent);transform:scale(1.02)}
+.gallery-thumb{
+  flex:1;
+  background:var(--bg3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  position:relative;
+  overflow:hidden;
+}
+.gallery-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.gallery-caption{padding:8px 10px;font-size:11px;color:var(--text3)}
+.gallery-caption strong{display:block;font-size:12px;color:var(--text);margin-bottom:1px}
+
+/* VIDEO GRID */
+.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.video-card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  cursor:pointer;
+  transition:all .2s;
+}
+.video-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.video-thumb{
+  width:100%;
+  aspect-ratio:16/9;
+  background:var(--bg3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:38px;
+  position:relative;
+}
+.play-icon{
+  position:absolute;
+  width:44px;height:44px;
+  background:rgba(230,57,70,0.85);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  transition:transform .2s;
+}
+.video-card:hover .play-icon{transform:scale(1.1)}
+.video-info{padding:12px 14px}
+.video-info h4{font-family:var(--font-display);font-size:13px;font-weight:700;margin-bottom:4px}
+.video-info p{font-size:11px;color:var(--text3);font-family:var(--font-mono)}
+
+/* UPLOAD ZONE */
+.upload-zone{
+  border:2px dashed var(--border2);
+  border-radius:var(--radius-lg);
+  padding:32px;
+  text-align:center;
+  margin-bottom:20px;
+  cursor:pointer;
+  transition:all .2s;
+  background:var(--bg2);
+}
+.upload-zone:hover{border-color:var(--accent);background:var(--accent-glow)}
+.upload-zone i{font-size:30px;color:var(--text3);display:block;margin-bottom:8px}
+.upload-zone p{font-size:13px;color:var(--text3)}
+.upload-zone strong{color:var(--accent)}
+
+/* AUTH */
+.auth-wrap{max-width:400px;margin:0 auto}
+.auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px}
+.auth-tab{
+  flex:1;padding:10px;text-align:center;
+  font-family:var(--font-display);font-size:12px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;color:var(--text3);
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:all .2s;
+}
+.auth-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.divider-line{
+  display:flex;align-items:center;gap:12px;
+  margin:16px 0;font-family:var(--font-mono);font-size:10px;color:var(--text3);
+}
+.divider-line::before,.divider-line::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ADMIN */
+.admin-layout{display:grid;grid-template-columns:200px 1fr;gap:20px}
+.admin-nav{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:8px;
+  height:fit-content;
+  position:sticky;
+  top:100px;
+}
+.admin-nav-item{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 12px;border-radius:var(--radius);
+  font-family:var(--font-display);font-size:11px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;color:var(--text3);
+  transition:all .15s;margin-bottom:2px;
+}
+.admin-nav-item:hover{background:var(--bg3);color:var(--text)}
+.admin-nav-item.active{background:var(--accent-glow);color:var(--accent);border:1px solid rgba(230,57,70,0.2)}
+.admin-section{display:none}
+.admin-section.active{display:block}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:16px;text-align:center;
+}
+.stat-card .num{
+  font-family:var(--font-display);font-size:32px;font-weight:800;
+  color:var(--accent);line-height:1;
+}
+.stat-card .lbl{
+  font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text3);margin-top:4px;
+}
+
+/* QUEUE ITEM */
+.queue-item{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:14px;margin-bottom:10px;
+}
+.queue-item-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px}
+.queue-item-head h4{font-family:var(--font-display);font-size:14px;font-weight:700;line-height:1.3}
+.queue-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+
+/* COMMENTS */
+.comment-item{
+  padding:10px 0;border-top:1px solid var(--border);
+  font-size:13px;line-height:1.5;
+}
+.comment-author{
+  font-family:var(--font-mono);font-size:11px;color:var(--cyan);margin-bottom:3px;
+}
+
+/* STORY EXPANDED */
+.story-expanded{
+  background:var(--bg2);border:1px solid var(--border);
+  border-top:2px solid var(--accent);
+  border-radius:var(--radius-lg);padding:20px;margin-bottom:16px;
+  animation:fadeIn .2s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.story-expanded h2{font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:12px;line-height:1.2}
+.story-expanded .body-text{font-size:14px;line-height:1.75;color:var(--text2);margin-bottom:16px}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--bg3);border:1px solid var(--border2);
+  border-left:3px solid var(--accent);
+  color:var(--text);padding:12px 18px;border-radius:var(--radius);
+  font-size:13px;font-family:var(--font-body);
+  opacity:0;transform:translateY(12px);
+  transition:all .3s;pointer-events:none;z-index:9999;
+  max-width:300px;
+}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* MODAL OVERLAY */
+.modal-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.75);
+  backdrop-filter:blur(8px);
+  z-index:1000;
+  align-items:center;justify-content:center;
+  padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:var(--radius-lg);
+  padding:24px;width:100%;max-width:500px;
+  position:relative;
+  animation:fadeIn .2s ease;
+}
+.modal-close{
+  position:absolute;top:14px;right:14px;
+  background:none;border:none;color:var(--text3);
+  cursor:pointer;font-size:20px;transition:color .15s;
+}
+.modal-close:hover{color:var(--text)}
+
+/* EMPTY STATE */
+.empty-state{
+  text-align:center;padding:48px 20px;
+  color:var(--text3);
+}
+.empty-state i{font-size:40px;display:block;margin-bottom:12px;color:var(--text3)}
+.empty-state p{font-size:13px}
+
+/* IMAGE PREVIEW */
+.img-preview{
+  width:100%;max-height:200px;object-fit:cover;
+  border-radius:var(--radius);border:1px solid var(--border);
+  margin-top:8px;
+}
+
+/* NOTICE */
+.notice{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-left:3px solid var(--cyan);
+  border-radius:var(--radius);padding:12px 16px;
+  font-size:13px;color:var(--text2);margin-bottom:16px;
+}
+.notice a{color:var(--accent);text-decoration:none}
+.notice a:hover{text-decoration:underline}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+
+/* LIGHTBOX */
+.lightbox-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.92);z-index:2000;
+  align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.lightbox-overlay.open{display:flex}
+.lightbox-overlay img{max-width:90vw;max-height:90vh;border-radius:var(--radius);border:1px solid var(--border2)}
+
+/* VIDEO MODAL */
+.video-modal{max-width:680px}
+.video-modal video,.video-modal iframe{width:100%;border-radius:var(--radius);margin-top:12px}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .home-layout{grid-template-columns:1fr}
+  .sidebar-right{display:none}
+  .admin-layout{grid-template-columns:1fr}
+  .admin-nav{position:static;display:flex;gap:4px;overflow-x:auto;flex-wrap:nowrap}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .masthead{padding:12px 14px}
+  .logo{font-size:20px}
+  main{padding:16px 12px}
+}
 </style>
+</head>
+<body>
 
-<div class="ticker-wrap">
-  <div class="ticker-label"><i class="ti ti-bolt" aria-hidden="true"></i> &nbsp;Breaking</div>
-  <div class="ticker-track" id="ticker">
-    <span>Cafeteria mystery smell finally identified — it was Kyle</span>
-    <span>Drama club auditions draw record 47 students</span>
-    <span>Someone left a love note in locker 114 — is it yours?</span>
-    <span>Gym teacher Mr. Kovács seen crying after dodgeball loss</span>
-    <span>Senior prom theme leaked: "A Night in Paris… or Toledo"</span>
-    <span>Cafeteria mystery smell finally identified — it was Kyle</span>
-    <span>Drama club auditions draw record 47 students</span>
-    <span>Someone left a love note in locker 114 — is it yours?</span>
-    <span>Gym teacher Mr. Kovács seen crying after dodgeball loss</span>
-    <span>Senior prom theme leaked: "A Night in Paris… or Toledo"</span>
-  </div>
+<!-- TICKER -->
+<div class="ticker-bar" id="ticker-bar" style="display:none">
+  <div class="ticker-label"><i class="ti ti-bolt"></i>&nbsp;<span data-t="breaking">BREAKING</span></div>
+  <div class="ticker-scroll" id="ticker-scroll"></div>
 </div>
 
+<!-- HEADER -->
 <header>
   <div class="masthead">
-    <div class="masthead-date" id="hdr-date">Thursday, May 29, 2026</div>
-    <div class="masthead-title">The School<span>☆</span>Scandal</div>
-    <div class="masthead-tagline">All the Drama. All the Tea. All the Time.</div>
+    <div>
+      <a class="logo" href="#" onclick="goTo('home');return false">The School<span>★</span>Scandal<small data-t="tagline">all the drama · all the time</small></a>
+    </div>
+    <div class="header-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+        <button class="lang-btn" onclick="setLang('hu',this)">HU</button>
+      </div>
+      <div class="user-chip" id="user-chip" onclick="goTo('login')">
+        <i class="ti ti-user" id="user-chip-icon"></i>
+        <span id="user-chip-label" data-t="login">Login</span>
+      </div>
+    </div>
   </div>
-  <nav>
-    <button class="nav-btn active" onclick="goTo('home',this)"><i class="ti ti-home" aria-hidden="true"></i> Front Page</button>
-    <button class="nav-btn" onclick="goTo('gossip',this)"><i class="ti ti-message-2" aria-hidden="true"></i> Gossip Wall</button>
-    <button class="nav-btn" onclick="goTo('gallery',this)"><i class="ti ti-camera" aria-hidden="true"></i> Paparazzi</button>
-    <button class="nav-btn" onclick="goTo('videos',this)"><i class="ti ti-video" aria-hidden="true"></i> Videos</button>
-    <button class="nav-btn" onclick="goTo('submit',this)"><i class="ti ti-bulb" aria-hidden="true"></i> Tips</button>
-    <button class="nav-btn" onclick="goTo('login',this)" id="login-nav-btn"><i class="ti ti-user" aria-hidden="true"></i> Login</button>
-    <button class="nav-btn" onclick="goTo('admin',this)" id="admin-nav-btn" style="display:none"><i class="ti ti-settings" aria-hidden="true"></i> Admin</button>
+  <nav id="main-nav">
+    <button class="nav-btn active" onclick="goTo('home',this)"><i class="ti ti-home"></i><span data-t="nav_home">Home</span></button>
+    <button class="nav-btn" onclick="goTo('gossip',this)"><i class="ti ti-message-2"></i><span data-t="nav_gossip">Gossip Wall</span></button>
+    <button class="nav-btn" onclick="goTo('gallery',this)"><i class="ti ti-camera"></i><span data-t="nav_gallery">Paparazzi</span></button>
+    <button class="nav-btn" onclick="goTo('videos',this)"><i class="ti ti-video"></i><span data-t="nav_videos">Videos</span></button>
+    <button class="nav-btn" onclick="goTo('tips',this)"><i class="ti ti-bulb"></i><span data-t="nav_tips">Tips</span></button>
+    <button class="nav-btn" id="admin-nav-btn" style="display:none;color:var(--cyan)" onclick="goTo('admin',this)"><i class="ti ti-settings"></i><span data-t="nav_admin">Admin</span></button>
   </nav>
 </header>
 
 <main>
 
-<!-- HOME -->
+<!-- ===== HOME ===== -->
 <div class="page active" id="page-home">
-  <div class="home-grid">
+  <div class="home-layout">
     <div>
-      <div id="story-expanded-area"></div>
-      <div class="front-story">
-        <div class="front-story-kicker">Exclusive</div>
-        <h2>Principal Seen Leaving School Early — Sub Refuses to Explain</h2>
-        <p>Multiple witnesses reported seeing Principal Horváth slip out through the side exit at 1:47 PM on Tuesday. The substitute who covered 5B claims to "know nothing." Students aren't buying it.</p>
-        <div class="story-meta">By Anonymous Tipster · 2 hours ago · <span class="gossip-tag" style="margin-left:4px">#teachers</span><span class="gossip-tag">#mystery</span></div>
-      </div>
-      <div id="story-list">
-        <div class="story-card" onclick="expandStory(0)">
-          <div class="story-num">01</div>
-          <div><h4>Cafeteria "secret menu" spotted — but who's running it?</h4><p style="font-size:12px;color:var(--muted)">Sources say a laminated list is being passed under desks...</p></div>
-        </div>
-        <div class="story-card" onclick="expandStory(1)">
-          <div class="story-num">02</div>
-          <div><h4>End-of-year trip location may have leaked</h4><p style="font-size:12px;color:var(--muted)">A teacher left a tab open on the projector. We saw everything.</p></div>
-        </div>
-        <div class="story-card" onclick="expandStory(2)">
-          <div class="story-num">03</div>
-          <div><h4>The drama club's "secret casting" controversy, explained</h4><p style="font-size:12px;color:var(--muted)">Why were auditions held at 7am on a Wednesday?</p></div>
-        </div>
-        <div class="story-card" onclick="expandStory(3)">
-          <div class="story-num">04</div>
-          <div><h4>Locker 212 has been locked for three years. No one knows why.</h4><p style="font-size:12px;color:var(--muted)">We asked. The janitor looked nervous.</p></div>
-        </div>
-      </div>
+      <div id="expanded-story-area"></div>
+      <div id="featured-story-wrap"></div>
+      <div id="story-list-wrap"></div>
     </div>
-    <div>
-      <div class="sidebar-box">
-        <div class="sidebar-title"><i class="ti ti-flame" aria-hidden="true"></i> Trending Now</div>
-        <div class="trend-item"><span>#romance</span><span class="hot-badge">HOT</span></div>
-        <div class="trend-item" style="border:none"><span>#mystery</span><span class="trend-tag">44 posts</span></div>
+    <div class="sidebar-right">
+      <div class="sidebar-widget">
+        <div class="widget-title"><i class="ti ti-flame"></i> <span data-t="trending">Trending</span></div>
+        <div id="trending-widget"></div>
       </div>
-      <div class="sidebar-box">
-        <div class="sidebar-title"><i class="ti ti-trophy" aria-hidden="true"></i> Most Reacted</div>
-        <div class="trend-item"><span style="font-size:12px">Kyle's cafeteria smell</span><span>💀 204</span></div>
-        <div class="trend-item"><span style="font-size:12px">Locker 114 love note</span><span>🔥 189</span></div>
-        <div class="trend-item" style="border:none"><span style="font-size:12px">Prom theme leak</span><span>👀 147</span></div>
+      <div class="sidebar-widget">
+        <div class="widget-title"><i class="ti ti-trophy"></i> <span data-t="most_reacted">Most Reacted</span></div>
+        <div id="top-gossip-widget"></div>
       </div>
-      <div class="sidebar-box">
-        <div class="sidebar-title"><i class="ti ti-camera" aria-hidden="true"></i> Latest Snaps</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-          <div style="aspect-ratio:1;background:#f5f5f3;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:24px">🎭</div>
-          <div style="aspect-ratio:1;background:#f5f5f3;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:24px">🍕</div>
-          <div style="aspect-ratio:1;background:#f5f5f3;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:24px">📚</div>
-          <div style="aspect-ratio:1;background:#f5f5f3;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:24px">⚽</div>
-        </div>
+      <div class="sidebar-widget">
+        <div class="widget-title"><i class="ti ti-camera"></i> <span data-t="latest_snaps">Latest Snaps</span></div>
+        <div id="gallery-preview-widget" style="display:grid;grid-template-columns:1fr 1fr;gap:6px"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- GOSSIP -->
+<!-- ===== GOSSIP ===== -->
 <div class="page" id="page-gossip">
-  <div id="logged-in-banner" style="display:none" class="logged-in-bar">
-    <span>Posting as <strong id="posting-as"></strong></span>
-    <label class="anon-toggle" style="margin-bottom:0">
-      <span style="margin-right:4px">Post anonymously</span>
-      <div class="toggle-switch" id="anon-toggle-gossip" onclick="toggleAnon(this)"></div>
-    </label>
+  <div class="section-head">
+    <h2 data-t="gossip_wall">Gossip Wall</h2>
+    <span class="kicker" id="gossip-count-label"></span>
   </div>
-  <div class="gossip-submit" id="gossip-form-wrap">
-    <h3>Spill the Tea</h3>
-    <div id="gossip-login-prompt" style="display:none;font-size:13px;color:var(--muted);padding:10px 0">
-      <a href="#" onclick="goTo('login',document.querySelector('.nav-btn:nth-child(6)'))" style="color:var(--red)">Log in</a> to post gossip.
+  <div id="gossip-auth-notice"></div>
+  <div class="card" id="gossip-form-card" style="margin-bottom:20px;display:none">
+    <h3 style="font-family:var(--font-display);font-size:16px;font-weight:800;margin-bottom:14px" data-t="spill_tea">Spill the Tea</h3>
+    <div class="form-group">
+      <label data-t="your_gossip">Your gossip</label>
+      <textarea id="gossip-text" data-t-placeholder="gossip_placeholder"></textarea>
     </div>
-    <div id="gossip-form-fields">
-      <div class="form-row">
-        <label>Your gossip</label>
-        <textarea id="gossip-text" placeholder="What did you see? What did you hear? No names needed..."></textarea>
-      </div>
-      <div class="form-row">
-        <label>Tag it</label>
-        <div class="tag-select" id="gossip-tags">
-          <button class="tag-btn" onclick="toggleTag(this)">#romance</button>
-          <button class="tag-btn" onclick="toggleTag(this)">#cafeteria</button>
-          <button class="tag-btn" onclick="toggleTag(this)">#teachers</button>
-          <button class="tag-btn" onclick="toggleTag(this)">#sports</button>
-          <button class="tag-btn" onclick="toggleTag(this)">#drama-club</button>
-          <button class="tag-btn" onclick="toggleTag(this)">#mystery</button>
-        </div>
-      </div>
-      <button class="btn-primary" onclick="submitGossip()"><i class="ti ti-send" aria-hidden="true"></i> Post Gossip</button>
+    <div class="form-group">
+      <label data-t="tag_it">Tag it</label>
+      <div class="tag-row" id="gossip-tag-row"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:4px">
+      <label class="toggle-row">
+        <div class="toggle on" id="gossip-anon-toggle" onclick="this.classList.toggle('on')"></div>
+        <span data-t="post_anon">Post anonymously</span>
+      </label>
+      <button class="btn btn-primary" onclick="submitGossip()"><i class="ti ti-send"></i><span data-t="post_gossip">Post Gossip</span></button>
     </div>
   </div>
-  <div class="gossip-filters">
-    <button class="filter-pill active" onclick="filterGossip('all',this)">All</button>
-    <button class="filter-pill" onclick="filterGossip('romance',this)">#romance</button>
-    <button class="filter-pill" onclick="filterGossip('cafeteria',this)">#cafeteria</button>
-    <button class="filter-pill" onclick="filterGossip('teachers',this)">#teachers</button>
-    <button class="filter-pill" onclick="filterGossip('sports',this)">#sports</button>
-    <button class="filter-pill" onclick="filterGossip('drama-club',this)">#drama-club</button>
-  </div>
+  <div class="filter-bar" id="gossip-filter-bar"></div>
   <div id="gossip-feed"></div>
 </div>
 
-<!-- GALLERY -->
+<!-- ===== GALLERY ===== -->
 <div class="page" id="page-gallery">
-  <div class="upload-zone" onclick="triggerUpload('photo')">
-    <i class="ti ti-camera-plus" aria-hidden="true" style="font-size:28px;color:var(--muted);display:block;margin-bottom:8px;text-align:center"></i>
-    <p style="font-size:13px;color:var(--muted);text-align:center">Click to upload a photo · PNG, JPG up to 10MB</p>
+  <div class="section-head">
+    <h2 data-t="paparazzi">Paparazzi</h2>
+    <span class="kicker" id="gallery-count-label"></span>
   </div>
+  <div id="gallery-upload-area"></div>
   <div class="gallery-grid" id="gallery-grid"></div>
-</div>
-
-<!-- VIDEOS -->
-<div class="page" id="page-videos">
-  <div class="upload-zone" onclick="triggerUpload('video')">
-    <i class="ti ti-video-plus" aria-hidden="true" style="font-size:28px;color:var(--muted);display:block;margin-bottom:8px;text-align:center"></i>
-    <p style="font-size:13px;color:var(--muted);text-align:center">Click to upload a video · MP4, MOV up to 500MB</p>
+  <div id="gallery-empty" class="empty-state" style="display:none">
+    <i class="ti ti-camera-off"></i>
+    <p data-t="no_photos">No photos yet. Be the first paparazzi!</p>
   </div>
-  <div class="video-grid" id="video-grid"></div>
 </div>
 
-<!-- TIPS -->
-<div class="page" id="page-submit">
-  <div class="idea-card">
-    <h3><i class="ti ti-bulb" aria-hidden="true" style="color:var(--red)"></i> Submit a Story Tip</h3>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Got a lead? Seen something suspicious? Tell us and our editors will investigate.</p>
-    <div id="tip-login-prompt" style="display:none;font-size:13px;color:var(--muted);padding:10px 0;border-top:1px solid var(--border)">
-      <a href="#" onclick="goTo('login',document.querySelector('.nav-btn:nth-child(6)'))" style="color:var(--red)">Log in</a> to submit a story tip.
+<!-- ===== VIDEOS ===== -->
+<div class="page" id="page-videos">
+  <div class="section-head">
+    <h2 data-t="videos">Videos</h2>
+    <span class="kicker" id="video-count-label"></span>
+  </div>
+  <div id="video-upload-area"></div>
+  <div class="video-grid" id="video-grid"></div>
+  <div id="video-empty" class="empty-state" style="display:none">
+    <i class="ti ti-video-off"></i>
+    <p data-t="no_videos">No videos yet. Start recording!</p>
+  </div>
+</div>
+
+<!-- ===== TIPS ===== -->
+<div class="page" id="page-tips">
+  <div class="section-head">
+    <h2 data-t="story_tips">Story Tips</h2>
+  </div>
+  <div id="tips-auth-notice"></div>
+  <div class="card" id="tips-form-card" style="margin-bottom:20px;display:none">
+    <h3 style="font-family:var(--font-display);font-size:16px;font-weight:800;margin-bottom:6px" data-t="submit_tip">Submit a Tip</h3>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:14px" data-t="tip_desc">Got a lead? Tell our editors and we'll investigate.</p>
+    <div class="form-group">
+      <label data-t="headline">Headline</label>
+      <input type="text" id="tip-headline" data-t-placeholder="tip_headline_placeholder">
     </div>
-    <div id="tip-form-fields">
-      <div class="form-row">
-        <label>Headline / One-liner</label>
-        <input type="text" id="tip-headline" placeholder="e.g. The teachers have a secret WhatsApp group">
-      </div>
-      <div class="form-row">
-        <label>Details</label>
-        <textarea id="tip-details" style="min-height:100px" placeholder="Tell us everything you know. The more detail the better. This goes directly to our editors."></textarea>
-      </div>
-      <div class="form-row">
-        <label>Category</label>
-        <div class="tag-select" id="tip-tags">
-          <button class="tag-btn" onclick="toggleTag(this)">#romance</button>
-          <button class="tag-btn" onclick="toggleTag(this)">#cafeteria</button>
-          <button class="tag-btn" onclick="toggleTag(this)">#teachers</button>
-          <button class="tag-btn" onclick="toggleTag(this)">#sports</button>
-          <button class="tag-btn" onclick="toggleTag(this)">#drama-club</button>
-          <button class="tag-btn" onclick="toggleTag(this)">#mystery</button>
-        </div>
-      </div>
-      <label class="anon-toggle">
-        <div class="toggle-switch on" id="tip-anon" onclick="toggleAnon(this)"></div>
-        <span>Submit anonymously (recommended)</span>
+    <div class="form-group">
+      <label data-t="details">Details</label>
+      <textarea id="tip-details" style="min-height:100px" data-t-placeholder="tip_details_placeholder"></textarea>
+    </div>
+    <div class="form-group">
+      <label data-t="category">Category</label>
+      <div class="tag-row" id="tip-tag-row"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:4px">
+      <label class="toggle-row">
+        <div class="toggle on" id="tip-anon-toggle" onclick="this.classList.toggle('on')"></div>
+        <span data-t="submit_anon">Submit anonymously</span>
       </label>
-      <button class="btn-primary" onclick="submitTip()"><i class="ti ti-send" aria-hidden="true"></i> Submit Tip</button>
+      <button class="btn btn-primary" onclick="submitTip()"><i class="ti ti-send"></i><span data-t="submit_tip_btn">Submit Tip</span></button>
     </div>
   </div>
   <div id="my-tips-section" style="display:none">
-    <h3 style="font-family:'Playfair Display',serif;font-size:18px;margin-bottom:12px">My Submitted Tips</h3>
+    <div class="section-head" style="margin-top:24px">
+      <h2 style="font-size:16px" data-t="my_tips">My Tips</h2>
+    </div>
     <div id="my-tips-list"></div>
   </div>
 </div>
 
-<!-- LOGIN -->
+<!-- ===== LOGIN ===== -->
 <div class="page" id="page-login">
   <div class="auth-wrap">
-    <div id="logged-in-card" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:28px;text-align:center">
-      <div style="font-size:40px;margin-bottom:12px">👤</div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px" id="welcome-msg">Welcome back!</h2>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:20px" id="user-info-msg"></p>
-      <button class="btn-primary" onclick="logout()"><i class="ti ti-logout" aria-hidden="true"></i> Log Out</button>
+    <div id="logged-in-card" style="display:none">
+      <div class="card" style="text-align:center;padding:32px">
+        <div class="online-dot" style="width:10px;height:10px;margin:0 auto 14px;box-shadow:0 0 12px var(--cyan)"></div>
+        <h2 style="font-family:var(--font-display);font-size:24px;font-weight:800;margin-bottom:6px" id="welcome-name"></h2>
+        <p style="font-family:var(--font-mono);font-size:11px;color:var(--text3);margin-bottom:20px" id="welcome-role"></p>
+        <button class="btn btn-ghost" onclick="doLogout()"><i class="ti ti-logout"></i><span data-t="logout">Log Out</span></button>
+      </div>
     </div>
-    <div class="auth-card" id="auth-card">
-      <h2>Join the Scandal</h2>
-      <p>One account per student. No fake names.</p>
+    <div class="card" id="auth-card">
+      <h2 style="font-family:var(--font-display);font-size:22px;font-weight:800;margin-bottom:4px" data-t="auth_title">Join the Scandal</h2>
+      <p style="font-size:13px;color:var(--text3);margin-bottom:18px" data-t="auth_sub">One account per student.</p>
       <div class="auth-tabs">
-        <div class="auth-tab active" onclick="switchTab('login')">Log In</div>
-        <div class="auth-tab" onclick="switchTab('register')">Create Account</div>
+        <div class="auth-tab active" onclick="switchAuthTab('login',this)" data-t="login_tab">Log In</div>
+        <div class="auth-tab" onclick="switchAuthTab('register',this)" data-t="register_tab">Create Account</div>
       </div>
       <div id="login-form">
-        <div class="form-row"><label>Username</label><input type="text" id="login-user" placeholder="Your username"></div>
-        <div class="form-row"><label>Password</label><input type="password" id="login-pass" placeholder="Password"></div>
-        <button class="btn-primary" style="width:100%;margin-top:4px" onclick="doLogin()">Log In</button>
-        <div style="margin-top:10px;font-size:12px;color:var(--muted);text-align:center">
-          <a href="#" onclick="switchTab('register')" style="color:var(--red)">No account? Create one</a>
-        </div>
-        <div class="divider" style="margin-top:16px"><span>or try demo</span></div>
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button class="btn-outline" style="flex:1;font-size:12px" onclick="quickLogin('student')"><i class="ti ti-user" aria-hidden="true"></i> Student Demo</button>
-          <button class="btn-outline" style="flex:1;font-size:12px" onclick="quickLogin('admin')"><i class="ti ti-settings" aria-hidden="true"></i> Admin Demo</button>
-        </div>
+        <div class="form-group"><label data-t="username">Username</label><input type="text" id="login-user" data-t-placeholder="username_ph"></div>
+        <div class="form-group"><label data-t="password">Password</label><input type="password" id="login-pass" data-t-placeholder="password_ph"></div>
+        <button class="btn btn-primary" style="width:100%" onclick="doLogin()"><i class="ti ti-login"></i><span data-t="login_btn">Log In</span></button>
       </div>
       <div id="register-form" style="display:none">
-        <div class="form-row"><label>Full Name</label><input type="text" id="reg-name" placeholder="Your real name (private)"></div>
-        <div class="form-row"><label>Username</label><input type="text" id="reg-user" placeholder="How you'll appear (if not anon)"></div>
-        <div class="form-row"><label>Password</label><input type="password" id="reg-pass" placeholder="Min. 6 characters"></div>
-        <p style="font-size:11px;color:var(--muted);margin-bottom:12px"><i class="ti ti-info-circle" aria-hidden="true"></i> You can only create one account. Choose your username wisely!</p>
-        <button class="btn-primary" style="width:100%" onclick="doRegister()">Create My Account</button>
+        <div class="form-group"><label data-t="full_name">Full Name</label><input type="text" id="reg-name" data-t-placeholder="fullname_ph"></div>
+        <div class="form-group"><label data-t="username">Username</label><input type="text" id="reg-user" data-t-placeholder="username_pick_ph"></div>
+        <div class="form-group"><label data-t="password">Password</label><input type="password" id="reg-pass" data-t-placeholder="password_min"></div>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:12px;font-family:var(--font-mono)" data-t="one_account_note">⚠ One account per person. Choose your username wisely.</p>
+        <button class="btn btn-primary" style="width:100%" onclick="doRegister()"><i class="ti ti-user-plus"></i><span data-t="create_account">Create Account</span></button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ADMIN -->
+<!-- ===== ADMIN ===== -->
 <div class="page" id="page-admin">
-  <div id="admin-lock" style="text-align:center;padding:40px">
-    <i class="ti ti-lock" aria-hidden="true" style="font-size:36px;color:var(--muted);display:block;margin-bottom:12px"></i>
-    <p style="color:var(--muted)">Admin access only. <a href="#" onclick="quickLogin('admin')" style="color:var(--red)">Log in as admin</a> to continue.</p>
+  <div id="admin-lock" style="text-align:center;padding:60px">
+    <i class="ti ti-lock" style="font-size:48px;color:var(--text3);display:block;margin-bottom:16px"></i>
+    <p style="color:var(--text3);font-size:14px" data-t="admin_locked">Admin access only. Log in with an admin account.</p>
   </div>
   <div id="admin-panel" style="display:none">
-    <div class="admin-wrap">
-      <div class="admin-sidebar">
-        <div class="admin-nav-item active" onclick="adminNav('dashboard',this)"><i class="ti ti-dashboard" aria-hidden="true"></i> Dashboard</div>
-        <div class="admin-nav-item" onclick="adminNav('stories',this)"><i class="ti ti-file-text" aria-hidden="true"></i> Publish Story</div>
-        <div class="admin-nav-item" onclick="adminNav('tips',this)"><i class="ti ti-inbox" aria-hidden="true"></i> Story Tips <span id="tip-count-badge" style="background:var(--red);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px">3</span></div>
-        <div class="admin-nav-item" onclick="adminNav('moderation',this)"><i class="ti ti-shield" aria-hidden="true"></i> Moderation</div>
-        <div class="admin-nav-item" onclick="adminNav('users',this)"><i class="ti ti-users" aria-hidden="true"></i> Users</div>
+    <div class="admin-layout">
+      <div class="admin-nav" id="admin-sidenav">
+        <div class="admin-nav-item active" onclick="adminNav('dashboard',this)"><i class="ti ti-dashboard"></i><span data-t="dashboard">Dashboard</span></div>
+        <div class="admin-nav-item" onclick="adminNav('publish',this)"><i class="ti ti-file-plus"></i><span data-t="publish_story">Publish Story</span></div>
+        <div class="admin-nav-item" onclick="adminNav('tips_inbox',this)"><i class="ti ti-inbox"></i><span data-t="tips_inbox">Tips Inbox</span> <span id="tips-badge" class="badge badge-red" style="margin-left:auto"></span></div>
+        <div class="admin-nav-item" onclick="adminNav('moderation',this)"><i class="ti ti-shield-check"></i><span data-t="moderation">Moderation</span> <span id="mod-badge" class="badge badge-yellow" style="margin-left:auto"></span></div>
+        <div class="admin-nav-item" onclick="adminNav('media',this)"><i class="ti ti-photo"></i><span data-t="media">Media</span></div>
+        <div class="admin-nav-item" onclick="adminNav('users_admin',this)"><i class="ti ti-users"></i><span data-t="users">Users</span></div>
+        <div class="admin-nav-item" onclick="adminNav('ticker_mgr',this)"><i class="ti ti-marquee"></i><span data-t="ticker_mgr">Ticker</span></div>
       </div>
-      <div class="admin-main">
-
+      <div>
+        <!-- DASHBOARD -->
         <div class="admin-section active" id="admin-dashboard">
-          <h3>Dashboard</h3>
-          <div class="stat-row">
-            <div class="stat-box"><div class="num">247</div><div class="lbl">Users</div></div>
-            <div class="stat-box"><div class="num">38</div><div class="lbl">Gossip Posts</div></div>
-            <div class="stat-box"><div class="num" id="tip-stat">3</div><div class="lbl">Pending Tips</div></div>
-            <div class="stat-box"><div class="num">12</div><div class="lbl">Stories Up</div></div>
-          </div>
-          <p style="font-size:13px;color:var(--muted)">Welcome, Editor. You have <strong id="mod-count">2</strong> posts pending moderation and <strong id="tip-count">3</strong> story tips to review.</p>
+          <div class="section-head"><h2 data-t="dashboard">Dashboard</h2></div>
+          <div class="stat-grid" id="stat-grid"></div>
+          <p style="font-size:13px;color:var(--text2)" id="admin-summary"></p>
         </div>
-
-        <div class="admin-section" id="admin-stories">
-          <h3>Publish a Story</h3>
-          <div class="form-row"><label>Headline</label><input type="text" id="pub-headline" placeholder="The headline everyone will see"></div>
-          <div class="form-row"><label>Kicker / Category</label><input type="text" id="pub-kicker" placeholder="e.g. Exclusive, Breaking, Opinion"></div>
-          <div class="form-row"><label>Story body</label><textarea id="pub-body" style="min-height:140px" placeholder="Write the full story here..."></textarea></div>
-          <div class="form-row">
-            <label>Tags</label>
-            <div class="tag-select" id="pub-tags">
-              <button class="tag-btn" onclick="toggleTag(this)">#romance</button>
-              <button class="tag-btn" onclick="toggleTag(this)">#cafeteria</button>
-              <button class="tag-btn" onclick="toggleTag(this)">#teachers</button>
-              <button class="tag-btn" onclick="toggleTag(this)">#sports</button>
-              <button class="tag-btn" onclick="toggleTag(this)">#drama-club</button>
-              <button class="tag-btn" onclick="toggleTag(this)">#mystery</button>
-            </div>
-          </div>
-          <div style="display:flex;gap:8px">
-            <button class="btn-primary" onclick="publishStory()"><i class="ti ti-check" aria-hidden="true"></i> Publish to Front Page</button>
-            <button class="btn-outline" onclick="showToast('Saved as draft')"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save Draft</button>
+        <!-- PUBLISH -->
+        <div class="admin-section" id="admin-publish">
+          <div class="section-head"><h2 data-t="publish_story">Publish Story</h2></div>
+          <div class="form-group"><label data-t="kicker">Kicker</label><input type="text" id="pub-kicker" data-t-placeholder="kicker_ph"></div>
+          <div class="form-group"><label data-t="headline">Headline</label><input type="text" id="pub-headline" data-t-placeholder="pub_headline_ph"></div>
+          <div class="form-group"><label data-t="story_body">Story Body</label><textarea id="pub-body" style="min-height:160px" data-t-placeholder="pub_body_ph"></textarea></div>
+          <div class="form-group"><label data-t="category">Category</label><div class="tag-row" id="pub-tag-row"></div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="publishStory()"><i class="ti ti-check"></i><span data-t="publish_btn">Publish</span></button>
+            <button class="btn btn-ghost" onclick="showToast(T('saved_draft'))"><i class="ti ti-device-floppy"></i><span data-t="save_draft">Save Draft</span></button>
           </div>
         </div>
-
-        <div class="admin-section" id="admin-tips">
-          <h3>Story Tips Inbox</h3>
-          <div id="tips-inbox"></div>
+        <!-- TIPS INBOX -->
+        <div class="admin-section" id="admin-tips_inbox">
+          <div class="section-head"><h2 data-t="tips_inbox">Tips Inbox</h2></div>
+          <div id="tips-inbox-list"></div>
         </div>
-
+        <!-- MODERATION -->
         <div class="admin-section" id="admin-moderation">
-          <h3>Moderation Queue</h3>
-          <div id="mod-queue"></div>
+          <div class="section-head"><h2 data-t="moderation">Moderation</h2></div>
+          <div id="mod-queue-list"></div>
         </div>
-
-        <div class="admin-section" id="admin-users">
-          <h3>Registered Users</h3>
-          <div id="users-list"></div>
+        <!-- MEDIA -->
+        <div class="admin-section" id="admin-media">
+          <div class="section-head"><h2 data-t="media">Media Management</h2></div>
+          <div id="admin-media-list"></div>
         </div>
-
+        <!-- USERS -->
+        <div class="admin-section" id="admin-users_admin">
+          <div class="section-head"><h2 data-t="users">Users</h2></div>
+          <div id="admin-users-list"></div>
+        </div>
+        <!-- TICKER -->
+        <div class="admin-section" id="admin-ticker_mgr">
+          <div class="section-head"><h2 data-t="ticker_mgr">Breaking News Ticker</h2></div>
+          <div class="form-group"><label data-t="ticker_item">Add ticker item</label><input type="text" id="ticker-input" data-t-placeholder="ticker_ph"></div>
+          <button class="btn btn-primary" onclick="addTickerItem()"><i class="ti ti-plus"></i><span data-t="add_ticker">Add</span></button>
+          <div id="ticker-list" style="margin-top:16px"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -466,326 +975,937 @@
 
 </main>
 
+<!-- LIGHTBOX -->
+<div class="lightbox-overlay" id="lightbox" onclick="this.classList.remove('open')">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- VIDEO MODAL -->
+<div class="modal-overlay" id="video-modal-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal video-modal">
+    <button class="modal-close" onclick="document.getElementById('video-modal-overlay').classList.remove('open')"><i class="ti ti-x"></i></button>
+    <h3 id="video-modal-title" style="font-family:var(--font-display);font-size:18px;font-weight:800"></h3>
+    <video id="video-modal-player" controls style="width:100%;border-radius:6px;margin-top:12px;background:#000;max-height:400px"></video>
+    <p id="video-modal-meta" style="font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-top:8px"></p>
+  </div>
+</div>
+
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-const d=document;
-let currentUser=null;
-const users={student:{name:'Alex Kovács',username:'alex_k',role:'student'},admin:{name:'Editor',username:'the_editor',role:'admin'}};
-const gossips=[
-  {id:1,text:'Someone in 10B has been writing love poems and leaving them in the library books. Three people have found one this week.',tags:['#romance'],reactions:{fire:24,eyes:18,skull:6},anon:true,user:'anon',time:'1h ago'},
-  {id:2,text:'The biology teacher definitely has a dog named "Photosynthesis." I heard him on the phone.',tags:['#teachers'],reactions:{fire:41,eyes:33,skull:12},anon:false,user:'nora_m',time:'3h ago'},
-  {id:3,text:'The secret cafeteria menu is real. I got a "special grilled cheese" by saying the codeword. I will not say what it is.',tags:['#cafeteria','#mystery'],reactions:{fire:88,eyes:72,skull:30},anon:true,user:'anon',time:'5h ago'},
-  {id:4,text:'Basketball team lost but someone snuck confetti into the gymnasium ceiling tiles. It rained confetti at 2pm for no reason.',tags:['#sports'],reactions:{fire:57,eyes:44,skull:8},anon:false,user:'bence_99',time:'Yesterday'},
-];
-const tips=[
-  {id:1,headline:'Teachers have a WhatsApp group called "The Survivors"',details:'My cousin is a teacher here and let it slip. Apparently they share photos of students sleeping in class.',tags:['#teachers'],user:'anon',time:'2h ago',status:'pending'},
-  {id:2,headline:'Prom committee is rigged',details:'The same friend group has won prom king/queen 3 years in a row. Someone knows something.',tags:['#romance'],user:'vera_t',time:'Yesterday',status:'pending'},
-  {id:3,headline:'Locker 212 mystery',details:"Janitor Gábor went pale when I asked. Said it's 'administrative' and walked away very fast.",tags:['#mystery'],user:'anon',time:'3 days ago',status:'pending'},
-];
-const modQueue=[
-  {id:1,text:"I heard the history teacher grades based on who brings him coffee.",tags:['#teachers'],user:'mark_b',status:'pending'},
-  {id:2,text:"Two 11th graders were seen holding hands behind the gym. You know who you are. 👀",tags:['#romance'],user:'anon',status:'pending'},
-];
-const gallery=[
-  {emoji:'🎭',caption:'Drama club rehearsal',sub:'Uploaded by nora_m'},
-  {emoji:'🍕',caption:'Cafeteria secret menu item??',sub:'Uploaded by anon'},
-  {emoji:'📚',caption:'Someone left 47 sticky notes',sub:'Uploaded by alex_k'},
-  {emoji:'⚽',caption:'Post-match chaos',sub:'Uploaded by bence_99'},
-  {emoji:'🎉',caption:'Birthday ambush in hallway',sub:'Uploaded by vera_t'},
-  {emoji:'😂',caption:'Teacher meme board caught on cam',sub:'Uploaded by anon'},
-];
-const videos=[
-  {emoji:'🎭',title:'Drama auditions compilation',sub:'3:42 · Drama Club · 2 days ago'},
-  {emoji:'⚽',title:'The confetti incident — full footage',sub:'1:15 · Sports · Yesterday'},
-  {emoji:'🎤',title:'Talent show surprise act',sub:'5:20 · Events · 3 days ago'},
-  {emoji:'😂',title:'Science experiment goes wrong',sub:'0:48 · Classrooms · 4 days ago'},
-];
-const storyDetails=[
-  {headline:'Cafeteria "secret menu" spotted — but who\'s running it?',body:'Multiple students have confirmed the existence of a laminated list being passed discreetly under desks in the cafeteria. The list reportedly contains items not available on the official menu, including a "legendary grilled cheese" and something called "The 4th Period Special." We attempted to obtain a copy. We were told to "forget we saw anything."'},
-  {headline:'End-of-year trip location may have leaked',body:'On Tuesday, during 3rd period geography, Mr. Balogh minimized his browser just slightly too slowly. At least four students in the front row report seeing a booking confirmation for a destination that begins with the letter "B." Full investigation pending.'},
-  {headline:'The drama club\'s "secret casting" controversy',body:'Auditions for the spring play were announced via a single sticky note on the teachers\' lounge door at 7am on a Wednesday. Many students claim they never heard about them. The cast list features no surprises, which is itself suspicious.'},
-  {headline:'Locker 212 — a three-year mystery',body:'Locker 212, in the north corridor, has not been assigned to any student since records began. When our reporter asked the janitor about it, he went pale, said it was "administrative," and walked away rapidly. The combination lock is a different brand than all others on the hallway. Nobody knows what\'s inside.'},
-];
+ 
+ TRANSLATIONS
+ 
+const LANG = {
+  en: {
+    tagline: "all the drama · all the time",
+    breaking: "BREAKING",
+    nav_home: "Home", nav_gossip: "Gossip Wall", nav_gallery: "Paparazzi",
+    nav_videos: "Videos", nav_tips: "Tips", nav_admin: "Admin",
+    login: "Login", logout: "Log Out",
+    trending: "Trending", most_reacted: "Most Reacted", latest_snaps: "Latest Snaps",
+    gossip_wall: "Gossip Wall", spill_tea: "Spill the Tea",
+    your_gossip: "Your Gossip", tag_it: "Tag it", post_anon: "Post anonymously",
+    post_gossip: "Post Gossip", gossip_placeholder: "What did you see? What did you hear?",
+    paparazzi: "Paparazzi", no_photos: "No photos yet. Be the first paparazzi!",
+    videos: "Videos", no_videos: "No videos yet. Start recording!",
+    story_tips: "Story Tips", submit_tip: "Submit a Tip",
+    tip_desc: "Got a lead? Tell our editors and we'll investigate.",
+    headline: "Headline", details: "Details", category: "Category",
+    submit_anon: "Submit anonymously (recommended)", submit_tip_btn: "Submit Tip",
+    tip_headline_placeholder: "e.g. Teachers have a secret group chat",
+    tip_details_placeholder: "Tell us everything. The more detail, the better.",
+    my_tips: "My Submitted Tips",
+    auth_title: "Join the Scandal", auth_sub: "One account per student.",
+    login_tab: "Log In", register_tab: "Create Account",
+    username: "Username", password: "Password", full_name: "Full Name",
+    username_ph: "Your username", password_ph: "Password",
+    fullname_ph: "Your real name (kept private)", username_pick_ph: "How you'll appear (if not anon)",
+    password_min: "Min. 6 characters",
+    one_account_note: "⚠ One account per person. Choose your username wisely.",
+    login_btn: "Log In", create_account: "Create Account",
+    admin_locked: "Admin access only. Log in with an admin account.",
+    dashboard: "Dashboard", publish_story: "Publish Story", tips_inbox: "Tips Inbox",
+    moderation: "Moderation", media: "Media", users: "Users", ticker_mgr: "Ticker",
+    kicker: "Kicker / Section Label", publish_btn: "Publish to Front Page",
+    save_draft: "Save Draft", story_body: "Story Body",
+    pub_headline_ph: "The headline everyone will see",
+    kicker_ph: "e.g. Exclusive, Breaking, Opinion",
+    pub_body_ph: "Write the full story here...",
+    ticker_item: "New Ticker Item", ticker_ph: "e.g. Kyle smells again",
+    add_ticker: "Add", saved_draft: "Saved as draft ✓",
+    gossip_posted: "Gossip posted! Awaiting approval 🔥",
+    tip_submitted: "Tip sent to editors! 🕵️",
+    story_published: "Story published! 📰",
+    login_success: "Welcome back!", register_success: "Account created! Welcome 🎉",
+    logged_out: "Logged out. Stay anonymous! 👻",
+    fill_required: "Please fill in required fields.",
+    approve: "Approve", reject: "Reject", delete_btn: "Delete", suspend: "Suspend",
+    login_to_post: "to post gossip.", login_to_tip: "to submit a tip.",
+    no_gossip: "No gossip yet. Be the first!",
+    no_tips_inbox: "No tips in the inbox.",
+    no_mod_queue: "Nothing pending moderation.",
+    no_users: "No registered users yet.",
+    no_media: "No media uploaded yet.",
+    no_stories: "No stories published yet. Be the first!",
+    no_tips_mine: "No tips submitted yet.",
+    upload_photo: "Click to upload a photo", upload_video: "Click to upload a video",
+    upload_photo_hint: "PNG, JPG, GIF up to 10MB", upload_video_hint: "MP4, MOV up to 200MB",
+    uploading: "Uploading...", upload_done: "Uploaded! ✓",
+    add_caption: "Add a caption...", comments_title: "Comments",
+    add_comment: "Add a comment...", post_comment: "Post",
+    comment_posted: "Comment posted! ✓", login_to_comment: "Log in to comment.",
+    pending: "pending", approved: "approved", rejected: "rejected",
+    posted_as: "Posting as", anon_label: "anon",
+    from: "From", no_ticker: "No ticker items yet.",
+    ticker_added: "Ticker item added!", ticker_removed: "Removed.",
+    confirm_delete: "Are you sure?",
+    user_suspended: "User suspended.",
+    upload_login_notice: "Log in to upload.",
+    status_pending: "pending review", status_approved: "approved",
+    read_more: "Read full story",
+    no_stories_home: "No stories published yet. Check back soon!"
+  },
+  hu: {
+    tagline: "minden dráma · minden idő",
+    breaking: "FRISS HÍR",
+    nav_home: "Főoldal", nav_gossip: "Pletykafal", nav_gallery: "Paparazzi",
+    nav_videos: "Videók", nav_tips: "Tippek", nav_admin: "Admin",
+    login: "Bejelentkezés", logout: "Kijelentkezés",
+    trending: "Trending", most_reacted: "Legtöbbet reagált", latest_snaps: "Legújabb fotók",
+    gossip_wall: "Pletykafal", spill_tea: "Öntsd ki a mérgét",
+    your_gossip: "A pletykád", tag_it: "Jelölj meg", post_anon: "Névtelen közzététel",
+    post_gossip: "Pletyka közzé", gossip_placeholder: "Mit láttál? Mit hallottál?",
+    paparazzi: "Paparazzi", no_photos: "Még nincs fotó. Légy te az első paparazzi!",
+    videos: "Videók", no_videos: "Még nincs videó. Kezdj el forgatni!",
+    story_tips: "Sztori tippek", submit_tip: "Tipp beküldése",
+    tip_desc: "Van egy nyomad? Mondd el a szerkesztőknek, mi utánanézünk.",
+    headline: "Cím", details: "Részletek", category: "Kategória",
+    submit_anon: "Névtelen beküldés (ajánlott)", submit_tip_btn: "Tipp beküldése",
+    tip_headline_placeholder: "pl. A tanároknak van egy titkos csoportjuk",
+    tip_details_placeholder: "Mondj el mindent. Minél több részlet, annál jobb.",
+    my_tips: "Az én beküldött tippjeim",
+    auth_title: "Csatlakozz a botránhoz", auth_sub: "Tanulónként egy fiók.",
+    login_tab: "Bejelentkezés", register_tab: "Fiók létrehozása",
+    username: "Felhasználónév", password: "Jelszó", full_name: "Teljes név",
+    username_ph: "Felhasználóneved", password_ph: "Jelszó",
+    fullname_ph: "Valódi neved (privát)", username_pick_ph: "Hogyan jelenj meg (ha nem névtelen)",
+    password_min: "Min. 6 karakter",
+    one_account_note: "⚠ Fejenként egy fiók. Válaszd meg óvatosan a nevét.",
+    login_btn: "Bejelentkezés", create_account: "Fiók létrehozása",
+    admin_locked: "Csak admin hozzáférés. Jelentkezz be admin fiókkal.",
+    dashboard: "Irányítópult", publish_story: "Sztorit közzé", tips_inbox: "Tippbeérkező",
+    moderation: "Moderáció", media: "Médiák", users: "Felhasználók", ticker_mgr: "Ticker",
+    kicker: "Kicker / Szekciófelirat", publish_btn: "Közzétesz a főoldalon",
+    save_draft: "Piszkozat mentése", story_body: "Sztoril törzse",
+    pub_headline_ph: "A cím, amit mindenki lát",
+    kicker_ph: "pl. Exkluzív, Friss, Vélemény",
+    pub_body_ph: "Írd meg a teljes sztorit...",
+    ticker_item: "Új ticker elem", ticker_ph: "pl. Kyle megint bűzlik",
+    add_ticker: "Hozzáad", saved_draft: "Piszkozatként mentve ✓",
+    gossip_posted: "Pletyka közzétéve! Jóváhagyásra vár 🔥",
+    tip_submitted: "Tipp elküldve a szerkesztőknek! 🕵️",
+    story_published: "Sztorit közzétettük! 📰",
+    login_success: "Üdv vissza!", register_success: "Fiók létrehozva! Üdvözöllek 🎉",
+    logged_out: "Kijelentkeztél. Maradj névtelen! 👻",
+    fill_required: "Kérlek töltsd ki a kötelező mezőket.",
+    approve: "Jóváhagyás", reject: "Elutasítás", delete_btn: "Törlés", suspend: "Felfüggesztés",
+    login_to_post: "a pletykázáshoz.", login_to_tip: "a tipp beküldéséhez.",
+    no_gossip: "Még nincs pletyka. Légy az első!",
+    no_tips_inbox: "Nincs tipp a beérkezőben.",
+    no_mod_queue: "Nincs moderálásra váró tartalom.",
+    no_users: "Még nincs regisztrált felhasználó.",
+    no_media: "Még nincs feltöltött médiafájl.",
+    no_stories: "Még nincs közzétett sztorit. Légy az első!",
+    no_tips_mine: "Még nem küldtél be tippet.",
+    upload_photo: "Kattints a fotó feltöltéséhez", upload_video: "Kattints a videó feltöltéséhez",
+    upload_photo_hint: "PNG, JPG, GIF max 10MB", upload_video_hint: "MP4, MOV max 200MB",
+    uploading: "Feltöltés...", upload_done: "Feltöltve! ✓",
+    add_caption: "Felirat hozzáadása...", comments_title: "Hozzászólások",
+    add_comment: "Hozzászólás hozzáadása...", post_comment: "Küld",
+    comment_posted: "Hozzászólás közzétéve! ✓", login_to_comment: "Hozzászóláshoz be kell jelentkezni.",
+    pending: "függő", approved: "jóváhagyva", rejected: "elutasítva",
+    posted_as: "Közzé teszed, mint", anon_label: "névtelen",
+    from: "Feladó", no_ticker: "Még nincs ticker elem.",
+    ticker_added: "Ticker elem hozzáadva!", ticker_removed: "Eltávolítva.",
+    confirm_delete: "Biztos vagy benne?",
+    user_suspended: "Felhasználó felfüggesztve.",
+    upload_login_notice: "Feltöltéshez be kell jelentkezni.",
+    status_pending: "jóváhagyásra vár", status_approved: "jóváhagyva",
+    read_more: "Teljes sztorit olvasd",
+    no_stories_home: "Még nincs közzétett sztorit. Nézz vissza hamarosan!"
+  }
+};
 
-function goTo(page,btn){
-  d.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  d.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  d.getElementById('page-'+page).classList.add('active');
-  if(btn)btn.classList.add('active');
-  if(page==='gossip')renderGossip('all');
-  if(page==='gallery')renderGallery();
-  if(page==='videos')renderVideos();
-  if(page==='admin')renderAdmin();
-  if(page==='submit')renderTips();
-  if(page==='login')renderLogin();
-}
+let lang = 'en';
+function T(key){ return (LANG[lang]||LANG.en)[key] || key; }
 
-function renderGossip(filter){
-  let data=gossips.filter(g=>filter==='all'||g.tags.includes('#'+filter));
-  d.getElementById('gossip-feed').innerHTML=data.map(g=>`
-    <div class="gossip-card" id="gossip-${g.id}">
-      <div class="gossip-header">
-        <div class="gossip-author">
-          <i class="ti ti-user-circle" aria-hidden="true" style="font-size:18px;color:var(--muted)"></i>
-          ${g.anon?'<span>Anonymous</span><span class="anon-badge">anon</span>':`<span>${g.user}</span>`}
-        </div>
-        <span class="gossip-time">${g.time}</span>
-      </div>
-      <div class="gossip-text">${g.text}</div>
-      <div>${g.tags.map(t=>`<span class="gossip-tag">${t}</span>`).join('')}</div>
-      <div class="reactions">
-        <button class="reaction-btn" onclick="react(${g.id},'fire',this)">🔥 <span>${g.reactions.fire}</span></button>
-        <button class="reaction-btn" onclick="react(${g.id},'eyes',this)">👀 <span>${g.reactions.eyes}</span></button>
-        <button class="reaction-btn" onclick="react(${g.id},'skull',this)">💀 <span>${g.reactions.skull}</span></button>
-      </div>
-    </div>`).join('');
-  const banner=d.getElementById('logged-in-banner');
-  const formFields=d.getElementById('gossip-form-fields');
-  const loginPrompt=d.getElementById('gossip-login-prompt');
-  if(currentUser){banner.style.display='flex';d.getElementById('posting-as').textContent=currentUser.username;formFields.style.display='block';loginPrompt.style.display='none';}
-  else{banner.style.display='none';formFields.style.display='none';loginPrompt.style.display='block';}
-}
-
-function react(id,type,btn){
-  const g=gossips.find(x=>x.id===id);
-  const isVoted=btn.classList.contains('voted');
-  btn.classList.toggle('voted');
-  g.reactions[type]+=isVoted?-1:1;
-  btn.querySelector('span').textContent=g.reactions[type];
-}
-
-function filterGossip(tag,btn){
-  d.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+function setLang(l, btn){
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  renderGossip(tag);
+  document.documentElement.lang = l;
+  applyTranslations();
+  refreshCurrentPage();
 }
 
-function submitGossip(){
-  const txt=d.getElementById('gossip-text').value.trim();
-  if(!txt){showToast('Write something first!');return;}
-  const activeTags=[...d.querySelectorAll('#gossip-tags .tag-btn.active')].map(b=>b.textContent);
-  const anonOn=d.getElementById('anon-toggle-gossip').classList.contains('on');
-  gossips.unshift({id:Date.now(),text:txt,tags:activeTags.length?activeTags:['#mystery'],reactions:{fire:0,eyes:0,skull:0},anon:anonOn,user:currentUser?currentUser.username:'anon',time:'Just now'});
-  d.getElementById('gossip-text').value='';
-  d.querySelectorAll('#gossip-tags .tag-btn').forEach(b=>b.classList.remove('active'));
-  showToast('Gossip posted! 🔥 (awaiting mod approval)');
-  renderGossip('all');
+function applyTranslations(){
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    const key = el.getAttribute('data-t');
+    el.textContent = T(key);
+  });
+  document.querySelectorAll('[data-t-placeholder]').forEach(el=>{
+    el.placeholder = T(el.getAttribute('data-t-placeholder'));
+  });
+  document.title = 'The School★Scandal';
 }
 
-function renderGallery(){
-  d.getElementById('gallery-grid').innerHTML=gallery.map(g=>`
-    <div class="gallery-item">
-      <div class="gallery-thumb">${g.emoji}</div>
-      <div class="gallery-caption"><strong>${g.caption}</strong>${g.sub}</div>
-    </div>`).join('');
-}
+ 
+ DATA STORE (localStorage)
+ 
+function load(key, def){ try{ const v=localStorage.getItem(key); return v!==null?JSON.parse(v):def; }catch(e){ return def; } }
+function save(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
 
-function renderVideos(){
-  d.getElementById('video-grid').innerHTML=videos.map(v=>`
-    <div class="video-card">
-      <div class="video-thumb" style="font-size:44px">${v.emoji}<div class="play-btn"><i class="ti ti-player-play" aria-hidden="true"></i></div></div>
-      <div class="video-info"><h4>${v.title}</h4><p>${v.sub}</p></div>
-    </div>`).join('');
-}
+let users    = load('tss_users', []);        {id, username, name, role, password, createdAt}
+let gossips  = load('tss_gossips', []);      {id, text, tags, reactions, anon, userId, username, time, status}
+let stories  = load('tss_stories', []);      {id, kicker, headline, body, tags, time, comments:[]}
+let tips     = load('tss_tips', []);         {id, headline, details, tags, anon, userId, username, time, status}
+let photos   = load('tss_photos', []);       {id, caption, dataUrl, userId, username, time, approved}
+let videos_  = load('tss_videos', []);       {id, title, dataUrl, userId, username, time, approved}
+let tickerItems = load('tss_ticker', []);    strings
 
-function renderLogin(){
-  if(currentUser){
-    d.getElementById('auth-card').style.display='none';
-    d.getElementById('logged-in-card').style.display='block';
-    d.getElementById('welcome-msg').textContent=`Welcome, ${currentUser.name}!`;
-    d.getElementById('user-info-msg').textContent=`@${currentUser.username} · ${currentUser.role==='admin'?'Editor / Admin':'Student'}`;
-  }else{
-    d.getElementById('auth-card').style.display='block';
-    d.getElementById('logged-in-card').style.display='none';
+let currentUser = null;
+let currentPage = 'home';
+
+const TAGS = ['#romance','#cafeteria','#teachers','#sports','#drama-club','#mystery','#other'];
+
+ 
+ NAVIGATION
+ 
+function goTo(page, btn){
+  currentPage = page;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const el = document.getElementById('page-'+page);
+  if(el) el.classList.add('active');
+  if(btn) btn.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-btn').forEach(b=>{
+      if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+page+"'")) b.classList.add('active');
+    });
   }
+  refreshCurrentPage();
 }
 
-function renderTips(){
-  if(currentUser){
-    d.getElementById('tip-form-fields').style.display='block';
-    d.getElementById('tip-login-prompt').style.display='none';
-    d.getElementById('my-tips-section').style.display='block';
-    d.getElementById('my-tips-list').innerHTML='<p style="font-size:13px;color:var(--muted)">No tips submitted yet.</p>';
-  }else{
-    d.getElementById('tip-form-fields').style.display='none';
-    d.getElementById('tip-login-prompt').style.display='block';
-    d.getElementById('my-tips-section').style.display='none';
+function refreshCurrentPage(){
+  const p = currentPage;
+  if(p==='home')    renderHome();
+  if(p==='gossip')  renderGossip();
+  if(p==='gallery') renderGallery();
+  if(p==='videos')  renderVideos();
+  if(p==='tips')    renderTips();
+  if(p==='login')   renderLogin();
+  if(p==='admin')   renderAdmin();
+}
+
+ 
+ HOME
+ 
+function renderHome(){
+  const pub = stories.filter(s=>s.published);
+  const featuredWrap = document.getElementById('featured-story-wrap');
+  const listWrap = document.getElementById('story-list-wrap');
+  const expanded = document.getElementById('expanded-story-area');
+  if(!pub.length){
+    featuredWrap.innerHTML = `<div class="empty-state"><i class="ti ti-news-off"></i><p>${T('no_stories_home')}</p></div>`;
+    listWrap.innerHTML='';
+    return;
   }
-}
-
-function renderAdmin(){
-  const lock=d.getElementById('admin-lock');
-  const panel=d.getElementById('admin-panel');
-  if(!currentUser||currentUser.role!=='admin'){lock.style.display='block';panel.style.display='none';return;}
-  lock.style.display='none';panel.style.display='block';
-  renderAdminSection('dashboard');
-}
-
-function renderAdminSection(sec){
-  if(sec==='tips'){
-    d.getElementById('tips-inbox').innerHTML=tips.map(t=>`
-      <div class="queue-item">
-        <div class="queue-item-head">
-          <h4>${t.headline}</h4>
-          <span class="status-badge status-${t.status}">${t.status}</span>
-        </div>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:6px">${t.details}</p>
-        <div>${t.tags.map(tag=>`<span class="gossip-tag">${tag}</span>`).join('')}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:6px">From: ${t.user} · ${t.time}</div>
-        <div class="queue-actions">
-          <button class="btn-sm btn-approve" onclick="approveTip(${t.id})"><i class="ti ti-check" aria-hidden="true"></i> Accept</button>
-          <button class="btn-sm btn-reject" onclick="rejectTip(${t.id})"><i class="ti ti-x" aria-hidden="true"></i> Reject</button>
-        </div>
-      </div>`).join('');
-  }
-  if(sec==='moderation'){
-    d.getElementById('mod-queue').innerHTML=modQueue.map(m=>`
-      <div class="queue-item">
-        <div class="queue-item-head">
-          <span class="gossip-author" style="font-size:13px"><i class="ti ti-user-circle" aria-hidden="true" style="font-size:16px;color:var(--muted)"></i> ${m.user}</span>
-          <span class="status-badge status-pending">pending review</span>
-        </div>
-        <div style="font-size:13px;margin:8px 0">"${m.text}"</div>
-        <div>${m.tags.map(tag=>`<span class="gossip-tag">${tag}</span>`).join('')}</div>
-        <div class="queue-actions">
-          <button class="btn-sm btn-approve" onclick="showToast('Post approved ✓')"><i class="ti ti-check" aria-hidden="true"></i> Approve</button>
-          <button class="btn-sm btn-reject" onclick="showToast('Post rejected')"><i class="ti ti-x" aria-hidden="true"></i> Reject</button>
-          <button class="btn-sm btn-delete" onclick="showToast('Post deleted')"><i class="ti ti-trash" aria-hidden="true"></i> Delete</button>
-        </div>
-      </div>`).join('');
-  }
-  if(sec==='users'){
-    const sampleUsers=[
-      {username:'alex_k',name:'Alex Kovács',role:'student',posts:3},
-      {username:'nora_m',name:'Nóra Molnár',role:'student',posts:7},
-      {username:'bence_99',name:'Bence Tóth',role:'student',posts:2},
-      {username:'vera_t',name:'Vera Takács',role:'student',posts:5},
-    ];
-    d.getElementById('users-list').innerHTML=sampleUsers.map(u=>`
-      <div class="queue-item" style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div style="font-size:14px;font-weight:500">@${u.username}</div>
-          <div style="font-size:12px;color:var(--muted)">${u.name} · ${u.posts} posts</div>
-        </div>
-        <div style="display:flex;gap:6px">
-          <button class="btn-sm btn-delete" onclick="showToast('User suspended')"><i class="ti ti-user-x" aria-hidden="true"></i> Suspend</button>
-        </div>
-      </div>`).join('');
-  }
-}
-
-function adminNav(sec,btn){
-  d.querySelectorAll('.admin-nav-item').forEach(b=>b.classList.remove('active'));
-  d.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
-  btn.classList.add('active');
-  d.getElementById('admin-'+sec).classList.add('active');
-  renderAdminSection(sec);
-}
-
-function approveTip(id){const t=tips.find(x=>x.id===id);if(t){t.status='approved';showToast('Tip accepted! Consider assigning to a story.');renderAdminSection('tips');}}
-function rejectTip(id){const t=tips.find(x=>x.id===id);if(t){t.status='rejected';showToast('Tip rejected.');renderAdminSection('tips');}}
-
-function publishStory(){
-  const h=d.getElementById('pub-headline').value.trim();
-  const b=d.getElementById('pub-body').value.trim();
-  if(!h||!b){showToast('Fill in headline and body!');return;}
-  showToast('Story published to front page! 📰');
-  d.getElementById('pub-headline').value='';
-  d.getElementById('pub-body').value='';
-  d.getElementById('pub-kicker').value='';
-}
-
-function submitTip(){
-  const h=d.getElementById('tip-headline').value.trim();
-  if(!h){showToast('Add a headline!');return;}
-  showToast('Tip sent to editors! 🕵️');
-  d.getElementById('tip-headline').value='';
-  d.getElementById('tip-details').value='';
-}
-
-function doLogin(){
-  const u=d.getElementById('login-user').value.trim();
-  const p=d.getElementById('login-pass').value;
-  if(!u||!p){showToast('Fill in username and password');return;}
-  if(u==='admin'&&p==='admin'){quickLogin('admin');return;}
-  currentUser={name:u,username:u,role:'student'};
-  showToast(`Welcome back, ${u}! 👋`);
-  updateNav();renderLogin();
-}
-
-function doRegister(){
-  const n=d.getElementById('reg-name').value.trim();
-  const u=d.getElementById('reg-user').value.trim();
-  const p=d.getElementById('reg-pass').value;
-  if(!n||!u||p.length<6){showToast('Fill all fields (password min 6 chars)');return;}
-  currentUser={name:n,username:u,role:'student'};
-  showToast(`Account created! Welcome, ${u} 🎉`);
-  updateNav();renderLogin();
-}
-
-function quickLogin(role){
-  currentUser=users[role];
-  showToast(role==='admin'?'Logged in as Editor 🛠️':`Welcome, ${currentUser.name}! 👋`);
-  updateNav();renderLogin();
-  if(role==='admin'){goTo('admin',d.getElementById('admin-nav-btn'));}
-}
-
-function logout(){
-  currentUser=null;
-  showToast('Logged out. Stay anonymous! 👻');
-  updateNav();renderLogin();
-}
-
-function updateNav(){
-  const adminBtn=d.getElementById('admin-nav-btn');
-  const loginBtn=d.getElementById('login-nav-btn');
-  if(currentUser){
-    adminBtn.style.display=currentUser.role==='admin'?'':'none';
-    loginBtn.innerHTML=`<i class="ti ti-user-check" aria-hidden="true"></i> @${currentUser.username}`;
-  }else{
-    adminBtn.style.display='none';
-    loginBtn.innerHTML=`<i class="ti ti-user" aria-hidden="true"></i> Login`;
-  }
-}
-
-function switchTab(tab){
-  d.getElementById('login-form').style.display=tab==='login'?'block':'none';
-  d.getElementById('register-form').style.display=tab==='register'?'block':'none';
-  d.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',i===(tab==='login'?0:1)));
-}
-
-function toggleTag(btn){btn.classList.toggle('active');}
-function toggleAnon(el){el.classList.toggle('on');}
-function triggerUpload(type){showToast(`${type==='photo'?'Photo':'Video'} upload coming soon! 📤`);}
-
-function expandStory(idx){
-  const s=storyDetails[idx];
-  const area=d.getElementById('story-expanded-area');
-  const isOpen=area.innerHTML.includes(s.headline);
-  if(isOpen){area.innerHTML='';return;}
-  area.innerHTML=`<div class="story-expanded open">
-    <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);font-weight:500;margin-bottom:6px">Full Story</div>
-    <h2>${s.headline}</h2>
-    <p>${s.body}</p>
-    <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
-      <div style="font-size:12px;font-weight:500;margin-bottom:8px">Comments (2)</div>
-      <div class="comment-item"><strong>nora_m</strong><span>Wait the janitor thing is 100% true I saw this too</span></div>
-      <div class="comment-item"><strong>anon</strong><span>Investigating. Will report back.</span></div>
-      <div style="margin-top:10px;display:flex;gap:8px">
-        <input type="text" placeholder="Add a comment..." style="flex:1;border:1px solid var(--border);border-radius:5px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--bg);color:var(--ink)">
-        <button class="btn-primary" onclick="showToast('Comment posted!')">Post</button>
+  const feat = pub[0];
+  featuredWrap.innerHTML = `
+    <div class="featured-story" onclick="expandStory('${feat.id}')">
+      <div class="kicker-tag">${escHtml(feat.kicker||'Story')}</div>
+      <h2>${escHtml(feat.headline)}</h2>
+      <p>${escHtml(feat.body.slice(0,180))}${feat.body.length>180?'…':''}</p>
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center;font-size:11px;color:var(--text3);font-family:var(--font-mono)">
+        ${feat.tags.map(t=>`<span class="badge badge-red">${escHtml(t)}</span>`).join('')}
+        <span style="margin-left:auto">${relTime(feat.time)}</span>
       </div>
-    </div>
-  </div>`;
+    </div>`;
+  const rest = pub.slice(1);
+  listWrap.innerHTML = rest.length ? `<div class="story-list">${rest.map((s,i)=>`
+    <div class="story-item" onclick="expandStory('${s.id}')">
+      <div class="story-num">0${i+2}</div>
+      <div>
+        <h4>${escHtml(s.headline)}</h4>
+        <p>${escHtml(s.body.slice(0,90))}${s.body.length>90?'…':''}</p>
+      </div>
+    </div>`).join('')}</div>` : '';
+  renderSidebar();
+}
+
+function expandStory(id){
+  const s = stories.find(x=>x.id===id);
+  if(!s) return;
+  const area = document.getElementById('expanded-story-area');
+  if(area.dataset.open===id){ area.innerHTML=''; area.dataset.open=''; return; }
+  area.dataset.open=id;
+  const comments = (s.comments||[]);
+  const commentsHtml = comments.map(c=>`
+    <div class="comment-item">
+      <div class="comment-author">@${escHtml(c.username)}</div>
+      <div>${escHtml(c.text)}</div>
+    </div>`).join('') || `<p style="font-size:12px;color:var(--text3);padding:10px 0">0 comments</p>`;
+  const loginNote = !currentUser ? `<p style="font-size:12px;color:var(--text3)">${T('login_to_comment')}</p>` :
+    `<div style="display:flex;gap:8px;margin-top:8px">
+      <input type="text" id="comment-input-${id}" placeholder="${T('add_comment')}" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:8px 10px;font-size:13px;color:var(--text);font-family:var(--font-body);outline:none">
+      <button class="btn btn-primary btn-sm" onclick="postComment('${id}')">${T('post_comment')}</button>
+    </div>`;
+  area.innerHTML = `
+    <div class="story-expanded">
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:8px">${escHtml(s.kicker||'Story')}</div>
+      <h2>${escHtml(s.headline)}</h2>
+      <div class="body-text">${escHtml(s.body).replace(/\n/g,'<br>')}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)">
+        ${s.tags.map(t=>`<span class="badge badge-red">${escHtml(t)}</span>`).join('')}
+        <span style="margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--text3)">${relTime(s.time)}</span>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--text3);margin-bottom:10px">${T('comments_title').toUpperCase()} (${comments.length})</div>
+      <div id="comments-${id}">${commentsHtml}</div>
+      ${loginNote}
+    </div>`;
   area.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function showToast(msg){
-  const t=d.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2800);
+function postComment(storyId){
+  const input = document.getElementById('comment-input-'+storyId);
+  const txt = input.value.trim();
+  if(!txt||!currentUser) return;
+  const s = stories.find(x=>x.id===storyId);
+  if(!s) return;
+  if(!s.comments) s.comments=[];
+  s.comments.push({id:uid(),username:currentUser.username,text:txt,time:new Date().toISOString()});
+  save('tss_stories',stories);
+  input.value='';
+  showToast(T('comment_posted'));
+  expandStory(storyId); expandStory(storyId);  re-render
 }
 
-d.getElementById('hdr-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+function renderSidebar(){
+   trending tags
+  const tagCounts = {};
+  gossips.filter(g=>g.status==='approved').forEach(g=>(g.tags||[]).forEach(t=>{tagCounts[t]=(tagCounts[t]||0)+1}));
+  const sorted = Object.entries(tagCounts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const tw = document.getElementById('trending-widget');
+  if(tw) tw.innerHTML = sorted.length ? sorted.map(([tag,count])=>`
+    <div class="trend-row"><span style="font-size:13px">${escHtml(tag)}</span><span class="trend-tag">${count}</span></div>`).join('') :
+    `<p style="font-size:12px;color:var(--text3);text-align:center;padding:10px 0">—</p>`;
+
+   top gossip
+  const topG = gossips.filter(g=>g.status==='approved')
+    .map(g=>({...g,total:Object.values(g.reactions||{}).reduce((a,b)=>a+b,0)}))
+    .sort((a,b)=>b.total-a.total).slice(0,3);
+  const tgw = document.getElementById('top-gossip-widget');
+  if(tgw) tgw.innerHTML = topG.length ? topG.map(g=>`
+    <div class="trend-row">
+      <span style="font-size:12px;flex:1;margin-right:10px">${escHtml((g.text||'').slice(0,40))}…</span>
+      <span style="font-size:12px">🔥 ${g.total}</span>
+    </div>`).join('') : `<p style="font-size:12px;color:var(--text3);text-align:center;padding:10px 0">—</p>`;
+
+   gallery preview
+  const gpw = document.getElementById('gallery-preview-widget');
+  if(gpw){
+    const approved = photos.filter(p=>p.approved).slice(0,4);
+    gpw.innerHTML = approved.map(p=>`
+      <div style="aspect-ratio:1;border-radius:4px;overflow:hidden;border:1px solid var(--border);cursor:pointer" onclick="openLightbox('${p.id}')">
+        <img src="${p.dataUrl}" style="width:100%;height:100%;object-fit:cover" alt="">
+      </div>`).join('') || '<p style="font-size:11px;color:var(--text3);grid-column:span 2;text-align:center;padding:10px 0">—</p>';
+  }
+
+   ticker
+  const tbar = document.getElementById('ticker-bar');
+  const tscroll = document.getElementById('ticker-scroll');
+  if(tickerItems.length){
+    tbar.style.display='flex';
+    const doubled = [...tickerItems,...tickerItems];
+    tscroll.innerHTML = doubled.map(t=>`<span>${escHtml(t)}</span>`).join('');
+  } else { tbar.style.display='none'; }
+}
+
+ 
+ GOSSIP
+ 
+let gossipFilter = 'all';
+
+function renderGossip(){
+   auth notice
+  const notice = document.getElementById('gossip-auth-notice');
+  const form = document.getElementById('gossip-form-card');
+  if(currentUser){
+    notice.innerHTML='';
+    form.style.display='block';
+  } else {
+    notice.innerHTML=`<div class="notice"><a href="#" onclick="goTo('login');return false">${T('login')}</a> ${T('login_to_post')}</div>`;
+    form.style.display='none';
+  }
+
+   tag row
+  buildTagRow('gossip-tag-row');
+
+   filter bar
+  const fb = document.getElementById('gossip-filter-bar');
+  const filters = ['all',...TAGS];
+  fb.innerHTML = filters.map(f=>`
+    <button class="tag-pill${gossipFilter===f?' active':''}" onclick="setGossipFilter('${f}',this)">
+      ${f==='all'?'All':escHtml(f)}
+    </button>`).join('');
+
+   feed
+  let filtered = gossips.filter(g=>g.status==='approved');
+  if(gossipFilter!=='all') filtered=filtered.filter(g=>(g.tags||[]).includes(gossipFilter));
+  filtered.sort((a,b)=>new Date(b.time)-new Date(a.time));
+  const feed = document.getElementById('gossip-feed');
+  const label = document.getElementById('gossip-count-label');
+  if(label) label.textContent = filtered.length + ' posts';
+
+  if(!filtered.length){
+    feed.innerHTML=`<div class="empty-state"><i class="ti ti-message-off"></i><p>${T('no_gossip')}</p></div>`;
+    return;
+  }
+  feed.innerHTML = filtered.map(g=>renderGossipCard(g)).join('');
+}
+
+function renderGossipCard(g){
+  const total = Object.values(g.reactions||{}).reduce((a,b)=>a+b,0);
+  const displayName = g.anon ? `<span>${T('anon_label')}</span><span class="badge badge-gray" style="font-size:9px">anon</span>` : `<span>@${escHtml(g.username)}</span>`;
+  return `
+    <div class="gossip-card" id="gc-${g.id}">
+      <div class="gossip-meta">
+        <div class="gossip-author"><i class="ti ti-user-circle" style="font-size:16px"></i>${displayName}</div>
+        <span class="gossip-time">${relTime(g.time)}</span>
+      </div>
+      <div class="gossip-body">${escHtml(g.text)}</div>
+      <div class="gossip-footer">
+        <div>${(g.tags||[]).map(t=>`<span class="badge badge-red" style="margin-right:4px">${escHtml(t)}</span>`).join('')}</div>
+        <div class="reactions">
+          <button class="rxn-btn${hasVoted(g.id,'fire')?' voted':''}" onclick="react('${g.id}','fire',this)">🔥 <span>${g.reactions&&g.reactions.fire||0}</span></button>
+          <button class="rxn-btn${hasVoted(g.id,'eyes')?' voted':''}" onclick="react('${g.id}','eyes',this)">👀 <span>${g.reactions&&g.reactions.eyes||0}</span></button>
+          <button class="rxn-btn${hasVoted(g.id,'skull')?' voted':''}" onclick="react('${g.id}','skull',this)">💀 <span>${g.reactions&&g.reactions.skull||0}</span></button>
+          <button class="rxn-btn${hasVoted(g.id,'sus')?'  voted':''}" onclick="react('${g.id}','sus',this)">👁️ sus <span>${g.reactions&&g.reactions.sus||0}</span></button>
+        </div>
+      </div>
+    </div>`;
+}
+
+let votes = load('tss_votes', {});  {gossipId: {fire,eyes,...}}
+function hasVoted(gid,type){ return votes[gid]&&votes[gid][type]; }
+function react(gid, type, btn){
+  const g = gossips.find(x=>x.id===gid); if(!g) return;
+  if(!g.reactions) g.reactions={fire:0,eyes:0,skull:0,sus:0};
+  if(!votes[gid]) votes[gid]={};
+  const already = votes[gid][type];
+  g.reactions[type] = (g.reactions[type]||0) + (already?-1:1);
+  votes[gid][type] = !already;
+  save('tss_gossips',gossips); save('tss_votes',votes);
+  btn.classList.toggle('voted',!already);
+  btn.querySelector('span').textContent = g.reactions[type];
+}
+
+function setGossipFilter(f){
+  gossipFilter=f; renderGossip();
+}
+
+function submitGossip(){
+  const txt = document.getElementById('gossip-text').value.trim();
+  if(!txt||!currentUser){ showToast(T('fill_required')); return; }
+  const tags = getActiveTags('gossip-tag-row');
+  const anon = document.getElementById('gossip-anon-toggle').classList.contains('on');
+  gossips.push({
+    id:uid(), text:txt, tags:tags.length?tags:[], anon,
+    userId:currentUser.id, username:currentUser.username,
+    reactions:{fire:0,eyes:0,skull:0,sus:0},
+    time:new Date().toISOString(), status:'pending'
+  });
+  save('tss_gossips',gossips);
+  document.getElementById('gossip-text').value='';
+  clearTags('gossip-tag-row');
+  showToast(T('gossip_posted'));
+  renderGossip();
+}
+
+ 
+ GALLERY
+ 
+function renderGallery(){
+  const uploadArea = document.getElementById('gallery-upload-area');
+  if(currentUser){
+    uploadArea.innerHTML=`
+      <div class="upload-zone" onclick="triggerPhotoUpload()">
+        <i class="ti ti-camera-plus"></i>
+        <p><strong>${T('upload_photo')}</strong><br><span style="font-size:11px">${T('upload_photo_hint')}</span></p>
+      </div>
+      <input type="file" id="photo-file-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">`;
+  } else {
+    uploadArea.innerHTML=`<div class="notice"><a href="#" onclick="goTo('login');return false">${T('login')}</a> ${T('upload_login_notice')}</div>`;
+  }
+  const approved = photos.filter(p=>p.approved);
+  const grid = document.getElementById('gallery-grid');
+  const empty = document.getElementById('gallery-empty');
+  if(!approved.length){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  const label = document.getElementById('gallery-count-label');
+  if(label) label.textContent = approved.length + ' photos';
+  grid.innerHTML = approved.map(p=>`
+    <div class="gallery-item" onclick="openLightbox('${p.id}')">
+      <div class="gallery-thumb">
+        <img src="${p.dataUrl}" alt="" loading="lazy">
+      </div>
+      <div class="gallery-caption">
+        <strong>${escHtml(p.caption||'Untitled')}</strong>
+        @${escHtml(p.username)} · ${relTime(p.time)}
+      </div>
+    </div>`).join('');
+}
+
+function triggerPhotoUpload(){
+  document.getElementById('photo-file-input').click();
+}
+
+function handlePhotoUpload(input){
+  const file = input.files[0]; if(!file||!currentUser) return;
+  if(file.size>10*1024*1024){ showToast('File too large (max 10MB)'); return; }
+  showToast(T('uploading'));
+  const reader = new FileReader();
+  reader.onload = e => {
+    const caption = prompt(T('add_caption'),'') || '';
+    photos.push({
+      id:uid(), caption, dataUrl:e.target.result,
+      userId:currentUser.id, username:currentUser.username,
+      time:new Date().toISOString(), approved:true
+    });
+    save('tss_photos',photos);
+    showToast(T('upload_done'));
+    renderGallery();
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+
+function openLightbox(photoId){
+  const p = photos.find(x=>x.id===photoId); if(!p) return;
+  document.getElementById('lightbox-img').src = p.dataUrl;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+ 
+ VIDEOS
+ 
+function renderVideos(){
+  const uploadArea = document.getElementById('video-upload-area');
+  if(currentUser){
+    uploadArea.innerHTML=`
+      <div class="upload-zone" onclick="triggerVideoUpload()">
+        <i class="ti ti-video-plus"></i>
+        <p><strong>${T('upload_video')}</strong><br><span style="font-size:11px">${T('upload_video_hint')}</span></p>
+      </div>
+      <input type="file" id="video-file-input" accept="video/*" style="display:none" onchange="handleVideoUpload(this)">`;
+  } else {
+    uploadArea.innerHTML=`<div class="notice"><a href="#" onclick="goTo('login');return false">${T('login')}</a> ${T('upload_login_notice')}</div>`;
+  }
+  const approved = videos_.filter(v=>v.approved);
+  const grid = document.getElementById('video-grid');
+  const empty = document.getElementById('video-empty');
+  if(!approved.length){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  const label = document.getElementById('video-count-label');
+  if(label) label.textContent = approved.length + ' videos';
+  grid.innerHTML = approved.map(v=>`
+    <div class="video-card" onclick="openVideo('${v.id}')">
+      <div class="video-thumb">
+        <video src="${v.dataUrl}" style="width:100%;height:100%;object-fit:cover" muted preload="metadata"></video>
+        <div class="play-icon"><i class="ti ti-player-play" style="font-size:16px;margin-left:2px"></i></div>
+      </div>
+      <div class="video-info">
+        <h4>${escHtml(v.title)}</h4>
+        <p>@${escHtml(v.username)} · ${relTime(v.time)}</p>
+      </div>
+    </div>`).join('');
+}
+
+function triggerVideoUpload(){
+  document.getElementById('video-file-input').click();
+}
+
+function handleVideoUpload(input){
+  const file = input.files[0]; if(!file||!currentUser) return;
+  if(file.size>200*1024*1024){ showToast('File too large (max 200MB)'); return; }
+  showToast(T('uploading'));
+  const reader = new FileReader();
+  reader.onload = e => {
+    const title = prompt(T('add_caption'),'') || 'Untitled Video';
+    videos_.push({
+      id:uid(), title, dataUrl:e.target.result,
+      userId:currentUser.id, username:currentUser.username,
+      time:new Date().toISOString(), approved:true
+    });
+    save('tss_videos',videos_);
+    showToast(T('upload_done'));
+    renderVideos();
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+
+function openVideo(id){
+  const v = videos_.find(x=>x.id===id); if(!v) return;
+  document.getElementById('video-modal-title').textContent = v.title;
+  document.getElementById('video-modal-player').src = v.dataUrl;
+  document.getElementById('video-modal-meta').textContent = `@${v.username} · ${relTime(v.time)}`;
+  document.getElementById('video-modal-overlay').classList.add('open');
+}
+
+ 
+ TIPS
+ 
+function renderTips(){
+  const notice = document.getElementById('tips-auth-notice');
+  const form = document.getElementById('tips-form-card');
+  const mySection = document.getElementById('my-tips-section');
+  if(currentUser){
+    notice.innerHTML='';
+    form.style.display='block';
+    mySection.style.display='block';
+    buildTagRow('tip-tag-row');
+    const mine = tips.filter(t=>t.userId===currentUser.id);
+    const ml = document.getElementById('my-tips-list');
+    ml.innerHTML = mine.length ? mine.sort((a,b)=>new Date(b.time)-new Date(a.time)).map(t=>`
+      <div class="queue-item">
+        <div class="queue-item-head">
+          <h4>${escHtml(t.headline)}</h4>
+          <span class="badge ${t.status==='approved'?'badge-green':t.status==='rejected'?'badge-red':'badge-yellow'}">${T(t.status||'pending')}</span>
+        </div>
+        <p style="font-size:13px;color:var(--text2)">${escHtml(t.details)}</p>
+        <div style="margin-top:8px;font-family:var(--font-mono);font-size:10px;color:var(--text3)">${relTime(t.time)}</div>
+      </div>`).join('') : `<p style="font-size:13px;color:var(--text3)">${T('no_tips_mine')}</p>`;
+  } else {
+    notice.innerHTML=`<div class="notice"><a href="#" onclick="goTo('login');return false">${T('login')}</a> ${T('login_to_tip')}</div>`;
+    form.style.display='none';
+    mySection.style.display='none';
+  }
+}
+
+function submitTip(){
+  const headline = document.getElementById('tip-headline').value.trim();
+  const details = document.getElementById('tip-details').value.trim();
+  if(!headline||!currentUser){ showToast(T('fill_required')); return; }
+  const tags = getActiveTags('tip-tag-row');
+  const anon = document.getElementById('tip-anon-toggle').classList.contains('on');
+  tips.push({
+    id:uid(), headline, details, tags,
+    anon, userId:currentUser.id, username:currentUser.username,
+    time:new Date().toISOString(), status:'pending'
+  });
+  save('tss_tips',tips);
+  document.getElementById('tip-headline').value='';
+  document.getElementById('tip-details').value='';
+  clearTags('tip-tag-row');
+  showToast(T('tip_submitted'));
+  renderTips();
+}
+
+ 
+ AUTH
+ 
+function renderLogin(){
+  const loggedCard = document.getElementById('logged-in-card');
+  const authCard = document.getElementById('auth-card');
+  if(currentUser){
+    loggedCard.style.display='block'; authCard.style.display='none';
+    document.getElementById('welcome-name').textContent = currentUser.username;
+    document.getElementById('welcome-role').textContent = currentUser.role==='admin'?'Admin / Editor':'Student';
+  } else {
+    loggedCard.style.display='none'; authCard.style.display='block';
+  }
+}
+
+function switchAuthTab(tab, btn){
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('login-form').style.display = tab==='login'?'block':'none';
+  document.getElementById('register-form').style.display = tab==='register'?'block':'none';
+}
+
+function doLogin(){
+  const uname = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  if(!uname||!pass){ showToast(T('fill_required')); return; }
+  const u = users.find(x=>x.username===uname&&x.password===simpleHash(pass));
+  if(!u){ showToast('Wrong username or password.'); return; }
+  currentUser = u; updateUserUI(); renderLogin();
+  showToast(T('login_success')+' @'+u.username);
+}
+
+function doRegister(){
+  const name = document.getElementById('reg-name').value.trim();
+  const uname = document.getElementById('reg-user').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  if(!name||!uname||pass.length<6){ showToast(T('fill_required')); return; }
+  if(users.find(u=>u.username===uname)){ showToast('Username taken.'); return; }
+  const u = {id:uid(), username:uname, name, role:'student', password:simpleHash(pass), createdAt:new Date().toISOString()};
+  users.push(u); save('tss_users',users);
+  currentUser=u; updateUserUI(); renderLogin();
+  showToast(T('register_success'));
+}
+
+function doLogout(){
+  currentUser=null; updateUserUI();
+  showToast(T('logged_out')); renderLogin(); refreshCurrentPage();
+}
+
+function updateUserUI(){
+  const chip = document.getElementById('user-chip');
+  const icon = document.getElementById('user-chip-icon');
+  const label = document.getElementById('user-chip-label');
+  const adminBtn = document.getElementById('admin-nav-btn');
+  if(currentUser){
+    chip.className='user-chip logged-in';
+    icon.className='ti ti-user-check';
+    label.textContent='@'+currentUser.username;
+    adminBtn.style.display = currentUser.role==='admin'?'':'none';
+  } else {
+    chip.className='user-chip';
+    icon.className='ti ti-user';
+    label.textContent=T('login');
+    adminBtn.style.display='none';
+  }
+}
+
+ 
+ ADMIN
+ 
+function renderAdmin(){
+  const lock = document.getElementById('admin-lock');
+  const panel = document.getElementById('admin-panel');
+  if(!currentUser||currentUser.role!=='admin'){ lock.style.display='block'; panel.style.display='none'; return; }
+  lock.style.display='none'; panel.style.display='block';
+  updateAdminBadges();
+  renderAdminSection('dashboard');
+}
+
+function updateAdminBadges(){
+  const pendingTips = tips.filter(t=>t.status==='pending').length;
+  const pendingMod = gossips.filter(g=>g.status==='pending').length;
+  const tb = document.getElementById('tips-badge');
+  const mb = document.getElementById('mod-badge');
+  if(tb){ tb.textContent=pendingTips||''; tb.style.display=pendingTips?'':'none'; }
+  if(mb){ mb.textContent=pendingMod||''; mb.style.display=pendingMod?'':'none'; }
+}
+
+function adminNav(sec, btn){
+  document.querySelectorAll('.admin-nav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  btn.classList.add('active');
+  const el = document.getElementById('admin-'+sec);
+  if(el) el.classList.add('active');
+  renderAdminSection(sec);
+}
+
+function renderAdminSection(sec){
+  if(sec==='dashboard'){
+    const sg = document.getElementById('stat-grid');
+    const pendingTips = tips.filter(t=>t.status==='pending').length;
+    const pendingMod = gossips.filter(g=>g.status==='pending').length;
+    sg.innerHTML=[
+      [users.length, T('users')],
+      [gossips.filter(g=>g.status==='approved').length, T('nav_gossip')],
+      [pendingTips, T('tips_inbox')],
+      [stories.filter(s=>s.published).length, T('nav_home')]
+    ].map(([n,l])=>`<div class="stat-card"><div class="num">${n}</div><div class="lbl">${l}</div></div>`).join('');
+    const sumEl = document.getElementById('admin-summary');
+    if(sumEl) sumEl.innerHTML=`${pendingMod} post(s) pending moderation &bull; ${pendingTips} tip(s) in inbox.`;
+  }
+  if(sec==='tips_inbox'){
+    const list = document.getElementById('tips-inbox-list');
+    const pending = tips.filter(t=>t.status==='pending');
+    list.innerHTML = pending.length ? pending.map(t=>`
+      <div class="queue-item">
+        <div class="queue-item-head"><h4>${escHtml(t.headline)}</h4><span class="badge badge-yellow">${T('pending')}</span></div>
+        <p style="font-size:13px;color:var(--text2);margin:6px 0">${escHtml(t.details)}</p>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3)">${T('from')}: ${t.anon?T('anon_label'):escHtml(t.username)} · ${relTime(t.time)}</div>
+        <div class="queue-actions">
+          <button class="btn btn-success btn-sm" onclick="updateTip('${t.id}','approved')"><i class="ti ti-check"></i>${T('approve')}</button>
+          <button class="btn btn-danger btn-sm" onclick="updateTip('${t.id}','rejected')"><i class="ti ti-x"></i>${T('reject')}</button>
+        </div>
+      </div>`).join('') : `<div class="empty-state"><i class="ti ti-inbox"></i><p>${T('no_tips_inbox')}</p></div>`;
+  }
+  if(sec==='moderation'){
+    const list = document.getElementById('mod-queue-list');
+    const pending = gossips.filter(g=>g.status==='pending');
+    list.innerHTML = pending.length ? pending.map(g=>`
+      <div class="queue-item">
+        <div class="queue-item-head">
+          <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan)">@${escHtml(g.anon?'anon':g.username)}</span>
+          <span class="badge badge-yellow">${T('status_pending')}</span>
+        </div>
+        <div style="font-size:13px;color:var(--text);margin:8px 0">"${escHtml(g.text)}"</div>
+        <div>${(g.tags||[]).map(t=>`<span class="badge badge-red" style="margin-right:4px">${escHtml(t)}</span>`).join('')}</div>
+        <div class="queue-actions">
+          <button class="btn btn-success btn-sm" onclick="moderateGossip('${g.id}','approved')"><i class="ti ti-check"></i>${T('approve')}</button>
+          <button class="btn btn-danger btn-sm" onclick="moderateGossip('${g.id}','rejected')"><i class="ti ti-x"></i>${T('reject')}</button>
+          <button class="btn btn-ghost btn-sm" onclick="moderateGossip('${g.id}','deleted')"><i class="ti ti-trash"></i>${T('delete_btn')}</button>
+        </div>
+      </div>`).join('') : `<div class="empty-state"><i class="ti ti-shield-check"></i><p>${T('no_mod_queue')}</p></div>`;
+  }
+  if(sec==='media'){
+    const list = document.getElementById('admin-media-list');
+    const allMedia = [
+      ...photos.map(p=>({...p,type:'photo'})),
+      ...videos_.map(v=>({...v,type:'video'}))
+    ].sort((a,b)=>new Date(b.time)-new Date(a.time));
+    list.innerHTML = allMedia.length ? allMedia.map(m=>`
+      <div class="queue-item" style="display:flex;gap:12px;align-items:center">
+        ${m.type==='photo'?`<img src="${m.dataUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid var(--border);flex-shrink:0">`
+          :`<div style="width:60px;height:60px;background:var(--bg3);border-radius:4px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-video" style="font-size:22px;color:var(--text3)"></i></div>`}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:500;margin-bottom:2px">${escHtml(m.type==='photo'?m.caption:m.title)}</div>
+          <div style="font-size:11px;color:var(--text3);font-family:var(--font-mono)">@${escHtml(m.username)} · ${relTime(m.time)} · ${m.approved?'<span style="color:#00c864">approved</span>':'<span style="color:var(--accent)">pending</span>'}</div>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="deleteMedia('${m.id}','${m.type}')"><i class="ti ti-trash"></i>${T('delete_btn')}</button>
+      </div>`).join('') : `<div class="empty-state"><i class="ti ti-photo-off"></i><p>${T('no_media')}</p></div>`;
+  }
+  if(sec==='users_admin'){
+    const list = document.getElementById('admin-users-list');
+    list.innerHTML = users.length ? users.map(u=>`
+      <div class="queue-item" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@${escHtml(u.username)}</div>
+          <div style="font-size:12px;color:var(--text3)">${escHtml(u.name)} · ${u.role} · joined ${relTime(u.createdAt)}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          ${u.role!=='admin'?`<button class="btn btn-danger btn-sm" onclick="suspendUser('${u.id}')"><i class="ti ti-user-x"></i>${T('suspend')}</button>`:''}
+        </div>
+      </div>`).join('') : `<div class="empty-state"><i class="ti ti-users-off"></i><p>${T('no_users')}</p></div>`;
+  }
+  if(sec==='ticker_mgr'){
+    buildTagRow('pub-tag-row');
+    renderTickerList();
+  }
+  if(sec==='publish'){
+    buildTagRow('pub-tag-row');
+  }
+}
+
+function moderateGossip(id, action){
+  if(action==='deleted'){ gossips = gossips.filter(g=>g.id!==id); }
+  else { const g=gossips.find(x=>x.id===id); if(g) g.status=action; }
+  save('tss_gossips',gossips); updateAdminBadges(); renderAdminSection('moderation');
+}
+
+function updateTip(id, status){
+  const t = tips.find(x=>x.id===id); if(!t) return;
+  t.status=status; save('tss_tips',tips); updateAdminBadges(); renderAdminSection('tips_inbox');
+}
+
+function deleteMedia(id, type){
+  if(!confirm(T('confirm_delete'))) return;
+  if(type==='photo'){ photos=photos.filter(p=>p.id!==id); save('tss_photos',photos); }
+  else { videos_=videos_.filter(v=>v.id!==id); save('tss_videos',videos_); }
+  renderAdminSection('media');
+}
+
+function suspendUser(id){
+  if(!confirm(T('confirm_delete'))) return;
+  users=users.filter(u=>u.id!==id); save('tss_users',users);
+  showToast(T('user_suspended')); renderAdminSection('users_admin');
+}
+
+function publishStory(){
+  const kicker = document.getElementById('pub-kicker').value.trim();
+  const headline = document.getElementById('pub-headline').value.trim();
+  const body = document.getElementById('pub-body').value.trim();
+  if(!headline||!body){ showToast(T('fill_required')); return; }
+  const tags = getActiveTags('pub-tag-row');
+  stories.push({
+    id:uid(), kicker, headline, body, tags,
+    published:true, time:new Date().toISOString(), comments:[]
+  });
+  save('tss_stories',stories);
+  document.getElementById('pub-kicker').value='';
+  document.getElementById('pub-headline').value='';
+  document.getElementById('pub-body').value='';
+  clearTags('pub-tag-row');
+  showToast(T('story_published'));
+}
+
+function addTickerItem(){
+  const input = document.getElementById('ticker-input');
+  const txt = input.value.trim(); if(!txt) return;
+  tickerItems.push(txt); save('tss_ticker',tickerItems);
+  input.value=''; showToast(T('ticker_added')); renderTickerList(); renderSidebar();
+}
+
+function renderTickerList(){
+  const list = document.getElementById('ticker-list');
+  if(!list) return;
+  list.innerHTML = tickerItems.length ? tickerItems.map((t,i)=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span>${escHtml(t)}</span>
+      <button class="btn btn-ghost btn-sm" onclick="removeTickerItem(${i})"><i class="ti ti-trash"></i></button>
+    </div>`).join('') : `<p style="font-size:13px;color:var(--text3)">${T('no_ticker')}</p>`;
+}
+
+function removeTickerItem(i){
+  tickerItems.splice(i,1); save('tss_ticker',tickerItems); renderTickerList(); renderSidebar(); showToast(T('ticker_removed'));
+}
+
+ 
+ AUTO-CREATE ADMIN ACCOUNT
+ 
+(function ensureAdmin(){
+  if(!users.find(u=>u.role==='admin')){
+    users.push({id:uid(),username:'admin',name:'Admin',role:'admin',password:simpleHash('admin123'),createdAt:new Date().toISOString()});
+    save('tss_users',users);
+  }
+})();
+
+function uid(){ return Math.random().toString(36).slice(2,10)+Date.now().toString(36); }
+function escHtml(s){ const d=document.createElement('div'); d.textContent=String(s||''); return d.innerHTML; }
+function simpleHash(s){let h=0;for(let c of s){h=(h<<5)-h+c.charCodeAt(0);h|=0;}return h.toString(36);}
+function relTime(iso){
+  const diff = Date.now()-new Date(iso).getTime();
+  const m=Math.floor(diff/60000),h=Math.floor(m/60),d=Math.floor(h/24);
+  if(m<1)return 'just now'; if(m<60)return m+'m ago'; if(h<24)return h+'h ago'; if(d<7)return d+'d ago';
+  return new Date(iso).toLocaleDateString();
+}
+
+function buildTagRow(rowId){
+  const row = document.getElementById(rowId); if(!row) return;
+  if(row.children.length) return;  already built
+  row.innerHTML = TAGS.map(t=>`<button class="tag-pill" onclick="this.classList.toggle('active')">${escHtml(t)}</button>`).join('');
+}
+
+function getActiveTags(rowId){
+  const row = document.getElementById(rowId); if(!row) return [];
+  return [...row.querySelectorAll('.tag-pill.active')].map(b=>b.textContent.trim());
+}
+
+function clearTags(rowId){
+  const row = document.getElementById(rowId); if(!row) return;
+  row.querySelectorAll('.tag-pill.active').forEach(b=>b.classList.remove('active'));
+}
+
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+applyTranslations();
+updateUserUI();
+renderHome();
 </script>
+</body>
+</html>
