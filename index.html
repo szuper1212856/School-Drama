@@ -564,7 +564,7 @@ async function renderHome() {
   const listWrap = document.getElementById('list-wrap');
   const expArea  = document.getElementById('exp-area');
   try {
-    const q = query(collection(db, 'stories'), where('published', '==', true), orderBy('time', 'desc'));
+    const q = query(collection(db, 'stories'), where('published', '==', true));
     const snap = await getDocs(q);
     const stories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     if (!stories.length) {
@@ -601,7 +601,7 @@ async function expandStory(id) {
   const snap = await getDoc(doc(db, 'stories', id));
   if (!snap.exists()) return;
   const s = { id: snap.id, ...snap.data() };
-  const cSnap = await getDocs(query(collection(db, 'stories', id, 'comments'), orderBy('time', 'asc')));
+  const cSnap = await getDocs(collection(db, 'stories', id, 'comments'));
   const comments = cSnap.docs.map(d => ({ id: d.id, ...d.data() }));
   const commHtml = comments.map(c => `
     <div class="ci"><div class="ca">@${esc(c.username)}</div><div>${esc(c.text)}</div></div>`).join('') ||
@@ -689,7 +689,7 @@ async function renderGossip() {
   document.getElementById('g-filters').innerHTML = filters.map(f =>
     `<button class="tp${gFilter === f ? ' active' : ''}" onclick="setGF('${f}',this)">${f === 'all' ? 'All' : esc(f)}</button>`).join('');
   try {
-    let q = query(collection(db, 'gossips'), where('status', '==', 'approved'), orderBy('time', 'desc'));
+    let q = query(collection(db, 'gossips'), where('status', '==', 'approved'));
     const snap = await getDocs(q);
     let gossips = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     if (gFilter !== 'all') gossips = gossips.filter(g => (g.tags || []).includes(gFilter));
@@ -777,7 +777,7 @@ async function renderGallery() {
     upArea.innerHTML = `<div class="notice"><a href="#" onclick="goTo('login');return false">${T('login')}</a> ${T('upload_login')}</div>`;
   }
   try {
-    const snap = await getDocs(query(collection(db, 'photos'), where('approved', '==', true), orderBy('time', 'desc')));
+    const snap = await getDocs(query(collection(db, 'photos'), where('approved', '==', true)));
     const photos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     const grid = document.getElementById('ph-grid');
     const empty = document.getElementById('ph-empty');
@@ -833,7 +833,7 @@ async function renderVideos() {
     upArea.innerHTML = `<div class="notice"><a href="#" onclick="goTo('login');return false">${T('login')}</a> ${T('upload_login')}</div>`;
   }
   try {
-    const snap = await getDocs(query(collection(db, 'videos'), where('approved', '==', true), orderBy('time', 'desc')));
+    const snap = await getDocs(query(collection(db, 'videos'), where('approved', '==', true)));
     const videos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     const grid = document.getElementById('vid-grid');
     const empty = document.getElementById('vid-empty');
@@ -897,7 +897,7 @@ async function renderTips() {
   if (CU && CUData) {
     notice.innerHTML = ''; form.style.display = 'block'; mySection.style.display = 'block';
     buildTags('t-tags');
-    const snap = await getDocs(query(collection(db, 'tips'), where('userId', '==', CU.uid), orderBy('time', 'desc')));
+    const snap = await getDocs(query(collection(db, 'tips'), where('userId', '==', CU.uid)));
     const mine = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     document.getElementById('my-tips-list').innerHTML = mine.length ? mine.map(t => `
       <div class="qi">
@@ -1042,7 +1042,7 @@ async function renderAdminSec(sec) {
     if (sum) sum.textContent = `${pt} post(s) pending moderation · ${tc.size} tip(s) in inbox.`;
   }
   if (sec === 'tips_in') {
-    const snap = await getDocs(query(collection(db, 'tips'), where('status', '==', 'pending'), orderBy('time', 'desc')));
+    const snap = await getDocs(query(collection(db, 'tips'), where('status', '==', 'pending')));
     const tips = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     document.getElementById('tips-list').innerHTML = tips.length ? tips.map(t => `
       <div class="qi">
@@ -1056,7 +1056,7 @@ async function renderAdminSec(sec) {
       </div>`).join('') : `<div class="es"><i class="ti ti-inbox"></i><p>${T('no_tips')}</p></div>`;
   }
   if (sec === 'mod') {
-    const snap = await getDocs(query(collection(db, 'gossips'), where('status', '==', 'pending'), orderBy('time', 'desc')));
+    const snap = await getDocs(query(collection(db, 'gossips'), where('status', '==', 'pending')));
     const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     document.getElementById('mod-list').innerHTML = items.length ? items.map(g => `
       <div class="qi">
@@ -1075,8 +1075,8 @@ async function renderAdminSec(sec) {
   }
   if (sec === 'media') {
     const [phSnap, vidSnap] = await Promise.all([
-      getDocs(query(collection(db, 'photos'), orderBy('time', 'desc'))),
-      getDocs(query(collection(db, 'videos'), orderBy('time', 'desc')))
+      getDocs(collection(db, 'photos')),
+      getDocs(collection(db, 'videos'))
     ]);
     const all = [
       ...phSnap.docs.map(d => ({ id: d.id, type: 'photo', ...d.data() })),
@@ -1098,7 +1098,7 @@ async function renderAdminSec(sec) {
       </div>`).join('') : `<div class="es"><i class="ti ti-photo-off"></i><p>${T('no_media')}</p></div>`;
   }
   if (sec === 'users_a') {
-    const snap = await getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc')));
+    const snap = await getDocs(collection(db, 'users'));
     const users = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     document.getElementById('users-list').innerHTML = users.length ? users.map(u => `
       <div class="qi" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
