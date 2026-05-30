@@ -1256,6 +1256,8 @@ window.postGenericComment = async function(colName, docId) {
   window.toggleComments(colName, docId, null);
   window.toggleComments(colName, docId, null);
 };
+
+window.approveMedia = async function(id, type) {
   await updateDoc(doc(db, type === 'photo' ? 'photos' : 'videos', id), { approved: true });
   showToast(T('approve') + ' ✓');
   renderAdminSec('media');
