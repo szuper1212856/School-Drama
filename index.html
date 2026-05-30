@@ -351,6 +351,8 @@ main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn bp" onclick="publishStory()"><i class="ti ti-check"></i><span data-t="pub_btn">Publish</span></button>
           </div>
+          <div class="sh" style="margin-top:28px"><h2 style="font-size:16px" data-t="published_stories">Published Stories</h2></div>
+          <div id="published-stories-list"></div>
         </div>
         <div class="asec" id="a-tips_in">
           <div class="sh"><h2 data-t="tips_inbox">Tips Inbox</h2></div>
@@ -445,7 +447,7 @@ const L = {
     username:"Username",email_ph:"your@email.com",pass_ph:"Password",name_ph:"Your real name (private)",
     uname_ph:"How you'll appear",pass_min:"Min. 6 characters",one_acct:"⚠ One account per person.",
     create_acct:"Create Account",login_btn:"Log In",admin_locked:"Admin access only.",
-    dashboard:"Dashboard",pub_story:"Publish Story",tips_inbox:"Tips Inbox",moderation:"Moderation",
+    dashboard:"Dashboard",pub_story:"Publish Story",published_stories:"Published Stories",tips_inbox:"Tips Inbox",moderation:"Moderation",
     media:"Media",users:"Users",ticker_mgr:"Ticker",kicker:"Kicker",pub_hl_ph:"The headline everyone will see",
     kicker_ph:"e.g. Exclusive, Breaking",pub_body_ph:"Write the full story here...",
     pub_btn:"Publish",story_body:"Story Body",ticker_item:"New Item",tick_ph:"e.g. Kyle smells again",
@@ -485,7 +487,7 @@ const L = {
     username:"Felhasználónév",email_ph:"te@email.com",pass_ph:"Jelszó",name_ph:"Valódi neved (privát)",
     uname_ph:"Hogyan jelenj meg",pass_min:"Min. 6 karakter",one_acct:"⚠ Fejenként egy fiók.",
     create_acct:"Fiók létrehozása",login_btn:"Bejelentkezés",admin_locked:"Csak admin hozzáférés.",
-    dashboard:"Irányítópult",pub_story:"Sztorit közzé",tips_inbox:"Tippbeérkező",moderation:"Moderáció",
+    dashboard:"Irányítópult",pub_story:"Sztorit közzé",published_stories:"Közzétett sztórik",tips_inbox:"Tippbeérkező",moderation:"Moderáció",
     media:"Médiák",users:"Felhasználók",ticker_mgr:"Ticker",kicker:"Kicker",pub_hl_ph:"A cím, amit mindenki lát",
     kicker_ph:"pl. Exkluzív, Friss",pub_body_ph:"Írd meg a teljes sztorit...",
     pub_btn:"Közzétesz",story_body:"Sztori törzse",ticker_item:"Új elem",tick_ph:"pl. Kyle megint bűzlik",
@@ -1200,6 +1202,7 @@ async function renderAdminSec(sec) {
         ${u.role !== 'admin' ? `<button class="btn bdn bsm" onclick="suspendU('${u.id}')"><i class="ti ti-user-x"></i>${T('suspend')}</button>` : ''}
       </div>`).join('') : `<div class="es"><i class="ti ti-users-off"></i><p>${T('no_users')}</p></div>`;
   }
+  if (sec === 'publish') { buildTags('p-tags'); renderPublishedStories(); }
   if (sec === 'ticker_a') renderTickerAdmin();
 }
 
@@ -1290,8 +1293,34 @@ async function publishStory() {
   document.getElementById('p-body').value = '';
   clearActive('p-tags');
   showToast(T('story_published'));
+  renderPublishedStories();
 }
 window.publishStory = publishStory;
+
+async function renderPublishedStories() {
+  const list = document.getElementById('published-stories-list');
+  if (!list) return;
+  const snap = await getDocs(query(collection(db, 'stories'), where('published', '==', true)));
+  const stories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  list.innerHTML = stories.length ? stories.map(s => `
+    <div class="qi" style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+      <div style="flex:1;min-width:0">
+        <div style="font-family:var(--fm);font-size:9px;letter-spacing:.1em;color:var(--accent);margin-bottom:3px">${esc(s.kicker||'Story')}</div>
+        <div style="font-size:14px;font-weight:700;font-family:var(--fd);margin-bottom:4px">${esc(s.headline)}</div>
+        <div style="font-size:12px;color:var(--text3)">${esc(s.body.slice(0,80))}…</div>
+        <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">${(s.tags||[]).map(t=>`<span class="badge br">${esc(t)}</span>`).join('')}</div>
+      </div>
+      <button class="btn bdn bsm" style="flex-shrink:0" onclick="deleteStory('${s.id}')"><i class="ti ti-trash"></i>${T('delete_btn')}</button>
+    </div>`).join('') : `<p style="font-size:13px;color:var(--text3)">${T('no_stories')}</p>`;
+}
+
+window.deleteStory = async function(id) {
+  if (!confirm(T('confirm_del'))) return;
+  await deleteDoc(doc(db, 'stories', id));
+  showToast(T('delete_btn') + ' ✓');
+  renderPublishedStories();
+  renderHome();
+};
 
 async function renderTickerAdmin() {
   const snap = await getDocs(collection(db, 'ticker'));
