@@ -229,8 +229,20 @@ main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1
     <h3 style="font-family:var(--fd);font-size:16px;font-weight:800;margin-bottom:14px" data-t="spill_tea">Spill the Tea</h3>
     <div class="fg"><label data-t="your_gossip">Your gossip</label><textarea id="g-text" data-t-placeholder="gossip_ph"></textarea></div>
     <div class="fg"><label data-t="tag_it">Tag it</label><div class="tag-row" id="g-tags"></div></div>
+    <div id="g-media-preview" style="margin-bottom:10px;display:none">
+      <div style="position:relative;display:inline-block">
+        <img id="g-media-img" style="max-height:160px;border-radius:6px;border:1px solid var(--border);display:none" alt="">
+        <video id="g-media-vid" style="max-height:160px;border-radius:6px;border:1px solid var(--border);display:none" controls></video>
+        <button onclick="clearGossipMedia()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.7);border:none;color:#fff;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center"><i class="ti ti-x"></i></button>
+      </div>
+    </div>
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:4px">
-      <label class="trow"><div class="tog on" id="g-anon" onclick="this.classList.toggle('on')"></div><span data-t="post_anon">Post anonymously</span></label>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <label class="trow"><div class="tog on" id="g-anon" onclick="this.classList.toggle('on')"></div><span data-t="post_anon">Post anonymously</span></label>
+        <button class="btn bgh bsm" onclick="document.getElementById('g-media-in').click()" style="gap:5px"><i class="ti ti-paperclip"></i><span data-t="attach">Attach</span></button>
+        <input type="file" id="g-media-in" accept="image/*,video/*" style="display:none" onchange="previewGossipMedia(this)">
+        <span id="g-media-name" style="font-size:11px;color:var(--text3);font-family:var(--fm)"></span>
+      </div>
       <button class="btn bp" onclick="submitGossip()"><i class="ti ti-send"></i><span data-t="post_gossip">Post Gossip</span></button>
     </div>
   </div>
@@ -437,7 +449,7 @@ const L = {
     media:"Media",users:"Users",ticker_mgr:"Ticker",kicker:"Kicker",pub_hl_ph:"The headline everyone will see",
     kicker_ph:"e.g. Exclusive, Breaking",pub_body_ph:"Write the full story here...",
     pub_btn:"Publish",story_body:"Story Body",ticker_item:"New Item",tick_ph:"e.g. Kyle smells again",
-    add_ticker:"Add",gossip_posted:"Gossip posted! Awaiting approval 🔥",tip_submitted:"Tip sent to editors! 🕵️",
+    add_ticker:"Add",attach:"Attach photo/video",gossip_posted:"Gossip posted! Awaiting approval 🔥",tip_submitted:"Tip sent to editors! 🕵️",
     story_published:"Story published! 📰",login_ok:"Welcome back!",reg_ok:"Account created! 🎉",
     logged_out:"Logged out 👻",fill_req:"Please fill in required fields.",approve:"Approve",
     reject:"Reject",delete_btn:"Delete",suspend:"Suspend",login_to_post:"to post gossip.",
@@ -477,7 +489,7 @@ const L = {
     media:"Médiák",users:"Felhasználók",ticker_mgr:"Ticker",kicker:"Kicker",pub_hl_ph:"A cím, amit mindenki lát",
     kicker_ph:"pl. Exkluzív, Friss",pub_body_ph:"Írd meg a teljes sztorit...",
     pub_btn:"Közzétesz",story_body:"Sztori törzse",ticker_item:"Új elem",tick_ph:"pl. Kyle megint bűzlik",
-    add_ticker:"Hozzáad",gossip_posted:"Pletyka közzétéve! Jóváhagyásra vár 🔥",tip_submitted:"Tipp elküldve! 🕵️",
+    add_ticker:"Hozzáad",attach:"Fotó/videó csatolása",gossip_posted:"Pletyka közzétéve! Jóváhagyásra vár 🔥",tip_submitted:"Tipp elküldve! 🕵️",
     story_published:"Sztorit közzétettük! 📰",login_ok:"Üdv vissza!",reg_ok:"Fiók létrehozva! 🎉",
     logged_out:"Kijelentkeztél 👻",fill_req:"Kérlek töltsd ki a kötelező mezőket.",approve:"Jóváhagyás",
     reject:"Elutasítás",delete_btn:"Törlés",suspend:"Felfüggesztés",login_to_post:"a pletykázáshoz.",
@@ -736,6 +748,10 @@ function gossipCard(g) {
         <span class="gt">${rel(g.time)}</span>
       </div>
       <div class="gb">${esc(g.text)}</div>
+      ${g.mediaUrl ? (g.mediaType === 'image'
+        ? `<img src="${g.mediaUrl}" style="max-width:100%;max-height:300px;border-radius:6px;border:1px solid var(--border);margin-bottom:12px;cursor:pointer" onclick="openLB('${g.mediaUrl}')" alt="">`
+        : `<video src="${g.mediaUrl}" controls style="max-width:100%;max-height:300px;border-radius:6px;border:1px solid var(--border);margin-bottom:12px"></video>`
+      ) : ''}
       <div class="gf">
         <div>${(g.tags || []).map(t => `<span class="badge br" style="margin-right:4px">${esc(t)}</span>`).join('')}</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -744,9 +760,11 @@ function gossipCard(g) {
             const voted = votes[g.id] && votes[g.id][key];
             return `<button class="rxn-btn${voted ? ' voted' : ''}" onclick="react('${g.id}','${key}',this)">${em} <span>${(g.reactions && g.reactions[key]) || 0}</span></button>`;
           }).join('')}
+          <button class="rxn-btn" onclick="toggleComments('gossips','${g.id}',this)"><i class="ti ti-message"></i> <span data-t="comments">Comments</span></button>
           ${isAdm ? `<button class="rxn-btn" style="border-color:rgba(230,57,70,0.3);color:var(--accent)" onclick="adminDeleteGossip('${g.id}')"><i class="ti ti-trash"></i></button>` : ''}
         </div>
       </div>
+      <div id="comments-gossips-${g.id}" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px"></div>
     </div>`;
 }
 window.setGF = function(f) { gFilter = f; renderGossip(); };
@@ -769,18 +787,60 @@ window.react = async function(gid, type, btn) {
   btn.querySelector('span').textContent = reactions[type];
 };
 
+window.previewGossipMedia = function(input) {
+  const file = input.files[0]; if (!file) return;
+  const preview = document.getElementById('g-media-preview');
+  const img = document.getElementById('g-media-img');
+  const vid = document.getElementById('g-media-vid');
+  const name = document.getElementById('g-media-name');
+  const url = URL.createObjectURL(file);
+  preview.style.display = 'block';
+  if (file.type.startsWith('image/')) {
+    img.src = url; img.style.display = 'block'; vid.style.display = 'none';
+  } else {
+    vid.src = url; vid.style.display = 'block'; img.style.display = 'none';
+  }
+  name.textContent = file.name;
+};
+
+window.clearGossipMedia = function() {
+  document.getElementById('g-media-in').value = '';
+  document.getElementById('g-media-preview').style.display = 'none';
+  document.getElementById('g-media-img').src = '';
+  document.getElementById('g-media-vid').src = '';
+  document.getElementById('g-media-name').textContent = '';
+};
+
 async function submitGossip() {
   const txt = document.getElementById('g-text').value.trim();
   if (!txt || !CU || !CUData) { showToast(T('fill_req')); return; }
   const tags = getActive('g-tags');
   const anon = document.getElementById('g-anon').classList.contains('on');
+  const fileInput = document.getElementById('g-media-in');
+  const file = fileInput.files[0];
+  let mediaUrl = null;
+  let mediaType = null;
+  if (file) {
+    if (file.size > 50 * 1024 * 1024) { showToast('Max 50MB for attachments'); return; }
+    showToast(T('uploading'));
+    const path = `gossip-media/${CU.uid}/${Date.now()}_${file.name}`;
+    const storRef = ref(stor, path);
+    const task = uploadBytesResumable(storRef, file);
+    await new Promise((resolve, reject) => {
+      task.on('state_changed', null, reject, resolve);
+    });
+    mediaUrl = await getDownloadURL(task.snapshot.ref);
+    mediaType = file.type.startsWith('image/') ? 'image' : 'video';
+  }
   await addDoc(collection(db, 'gossips'), {
     text: txt, tags, anon, userId: CU.uid, username: CUData.username,
     reactions: { fire: 0, eyes: 0, skull: 0, sus: 0 },
-    time: serverTimestamp(), status: 'pending'
+    time: serverTimestamp(), status: 'pending',
+    ...(mediaUrl && { mediaUrl, mediaType })
   });
   document.getElementById('g-text').value = '';
   clearActive('g-tags');
+  window.clearGossipMedia();
   showToast(T('gossip_posted'));
   renderGossip();
 }
@@ -809,9 +869,13 @@ async function renderGallery() {
     empty.style.display = 'none';
     if (cnt) cnt.textContent = photos.length + ' photos';
     grid.innerHTML = photos.map(p => `
-      <div class="gi" onclick="openLB('${p.storageUrl}')">
-        <div class="gthumb"><img src="${p.storageUrl}" alt="" loading="lazy"></div>
+      <div class="gi" style="aspect-ratio:unset">
+        <div class="gthumb" style="aspect-ratio:4/3;cursor:pointer" onclick="openLB('${p.storageUrl}')"><img src="${p.storageUrl}" alt="" loading="lazy"></div>
         <div class="gcap"><strong>${esc(p.caption || 'Untitled')}</strong>@${esc(p.username)} · ${rel(p.time)}</div>
+        <div style="padding:6px 10px;border-top:1px solid var(--border)">
+          <button class="rxn-btn" style="font-size:11px" onclick="toggleComments('photos','${p.id}',this)"><i class="ti ti-message"></i> <span data-t="comments">Comments</span></button>
+        </div>
+        <div id="comments-photos-${p.id}" style="display:none;padding:10px;border-top:1px solid var(--border)"></div>
       </div>`).join('');
   } catch(e) { console.error(e); }
 }
@@ -865,12 +929,16 @@ async function renderVideos() {
     empty.style.display = 'none';
     if (cnt) cnt.textContent = videos.length + ' videos';
     grid.innerHTML = videos.map(v => `
-      <div class="vc" onclick="openVideo('${v.id}','${v.storageUrl}','${esc(v.title)}','${esc(v.username)}','${rel(v.time)}')">
-        <div class="vt">
+      <div class="vc">
+        <div class="vt" onclick="openVideo('${v.id}','${v.storageUrl}','${esc(v.title)}','${esc(v.username)}','${rel(v.time)}')">
           <video src="${v.storageUrl}" preload="metadata" muted></video>
           <div class="pi"><i class="ti ti-player-play" style="font-size:16px;margin-left:2px"></i></div>
         </div>
         <div class="vi"><h4>${esc(v.title)}</h4><p>@${esc(v.username)} · ${rel(v.time)}</p></div>
+        <div style="padding:6px 12px;border-top:1px solid var(--border)">
+          <button class="rxn-btn" style="font-size:11px" onclick="toggleComments('videos','${v.id}',this)"><i class="ti ti-message"></i> <span data-t="comments">Comments</span></button>
+        </div>
+        <div id="comments-videos-${v.id}" style="display:none;padding:10px;border-top:1px solid var(--border)"></div>
       </div>`).join('');
   } catch(e) { console.error(e); }
 }
@@ -1153,7 +1221,41 @@ window.modG = async function(id, action) {
   await updateBadges(); renderAdminSec('mod');
 };
 
-window.approveMedia = async function(id, type) {
+window.toggleComments = async function(colName, docId, btn) {
+  const box = document.getElementById(`comments-${colName}-${docId}`);
+  if (!box) return;
+  if (box.style.display !== 'none') { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  box.innerHTML = `<p style="font-size:12px;color:var(--text3)">Loading...</p>`;
+  const snap = await getDocs(collection(db, colName, docId, 'comments'));
+  const comments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const commHtml = comments.length ? comments.map(c => `
+    <div class="ci">
+      <div class="ca">@${esc(c.username)}</div>
+      <div style="font-size:13px">${esc(c.text)}</div>
+    </div>`).join('') : `<p style="font-size:12px;color:var(--text3);padding:4px 0">No comments yet.</p>`;
+  const inputHtml = CU
+    ? `<div style="display:flex;gap:8px;margin-top:8px">
+        <input type="text" id="cin-${colName}-${docId}" placeholder="${T('add_comment')}" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:7px 10px;font-size:12px;color:var(--text);font-family:var(--fb);outline:none">
+        <button class="btn bp bsm" onclick="postGenericComment('${colName}','${docId}')">${T('post_comment')}</button>
+      </div>`
+    : `<p style="font-size:12px;color:var(--text3);margin-top:6px">${T('login_comment')}</p>`;
+  box.innerHTML = commHtml + inputHtml;
+};
+
+window.postGenericComment = async function(colName, docId) {
+  const input = document.getElementById(`cin-${colName}-${docId}`);
+  if (!input || !CU || !CUData) return;
+  const txt = input.value.trim();
+  if (!txt) return;
+  await addDoc(collection(db, colName, docId, 'comments'), {
+    text: txt, userId: CU.uid, username: CUData.username, time: serverTimestamp()
+  });
+  input.value = '';
+  showToast(T('comment_ok'));
+  window.toggleComments(colName, docId, null);
+  window.toggleComments(colName, docId, null);
+};
   await updateDoc(doc(db, type === 'photo' ? 'photos' : 'videos', id), { approved: true });
   showToast(T('approve') + ' ✓');
   renderAdminSec('media');
