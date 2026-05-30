@@ -380,6 +380,19 @@ main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1
   </div>
 </div>
 
+<div class="mo open" id="disclaimer-mo" onclick="">
+  <div class="md" style="max-width:480px;border-top:2px solid var(--accent)">
+    <div style="font-family:var(--fm);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:10px" data-t="disclaimer_kicker">Community Standards</div>
+    <h2 style="font-family:var(--fd);font-size:20px;font-weight:800;margin-bottom:12px;line-height:1.2" data-t="disclaimer_title">Before you enter</h2>
+    <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px" data-t="disclaimer_body">Everything posted on this site is your personal responsibility. By using this platform you agree that any content violating our community standards — including harassment, hate speech, personal attacks, or illegal content — may result in consequences including being reported to school administration.</p>
+    <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px" data-t="disclaimer_body2">Anonymous posts are not truly anonymous — administrators can see who posted what.</p>
+    <div style="display:flex;gap:8px">
+      <button class="btn bp" style="flex:1" onclick="acceptDisclaimer()"><i class="ti ti-check"></i><span data-t="disclaimer_accept">I understand, enter</span></button>
+      <button class="btn bgh" onclick="window.history.back()"><i class="ti ti-x"></i><span data-t="disclaimer_leave">Leave</span></button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module">
@@ -439,7 +452,11 @@ const L = {
     confirm_del:"Are you sure?",suspended:"User suspended.",upload_login:"Log in to upload.",
     no_stories_home:"No stories published yet. Check back soon!",wrong_creds:"Wrong email or password.",
     email_taken:"Email already in use.",weak_pass:"Password is too weak (min 6 chars).",
-    uname_taken:"Username already taken.",read_more:"Read full story"
+    uname_taken:"Username already taken.",read_more:"Read full story",
+    disclaimer_kicker:"Community Standards",disclaimer_title:"Before you enter",
+    disclaimer_body:"Everything posted on this site is your personal responsibility. By using this platform you agree that any content violating our community standards — including harassment, hate speech, personal attacks, or illegal content — may result in consequences including being reported to school administration.",
+    disclaimer_body2:"Anonymous posts are not truly anonymous — administrators can see who posted what.",
+    disclaimer_accept:"I understand, enter",disclaimer_leave:"Leave"
   },
   hu:{
     tagline:"minden dráma · minden idő",breaking:"FRISS HÍR",
@@ -475,7 +492,11 @@ const L = {
     confirm_del:"Biztos vagy benne?",suspended:"Felhasználó felfüggesztve.",upload_login:"Feltöltéshez be kell jelentkezni.",
     no_stories_home:"Még nincs közzétett sztori. Nézz vissza hamarosan!",wrong_creds:"Hibás email vagy jelszó.",
     email_taken:"Ez az email már foglalt.",weak_pass:"A jelszó túl gyenge (min. 6 karakter).",
-    uname_taken:"Ez a felhasználónév már foglalt.",read_more:"Teljes sztori"
+    uname_taken:"Ez a felhasználónév már foglalt.",read_more:"Teljes sztori",
+    disclaimer_kicker:"Közösségi szabályok",disclaimer_title:"Mielőtt belépsz",
+    disclaimer_body:"Minden, amit ezen az oldalon teszel közzé, a te személyes felelősséged. Az oldal használatával elfogadod, hogy a közösségi szabályokat sértő tartalmak — beleértve a zaklatást, gyűlöletbeszédet, személyes támadásokat vagy jogellenes tartalmat — következményekkel járhatnak, beleértve az iskolai adminisztrációnak való bejelentést.",
+    disclaimer_body2:"A névtelen posztok nem valóban névtelenek — az adminisztrátorok látják, ki mit posztolt.",
+    disclaimer_accept:"Megértettem, belépek",disclaimer_leave:"Kilépés"
   }
 };
 
@@ -703,8 +724,9 @@ async function renderGossip() {
 
 function gossipCard(g) {
   const total = Object.values(g.reactions || {}).reduce((a, b) => a + b, 0);
+  const isAdm = CUData && CUData.role === 'admin';
   const nameHtml = g.anon
-    ? `<span>${T('anon_label')}</span><span class="badge bg" style="font-size:9px">anon</span>`
+    ? `<span>${T('anon_label')}</span><span class="badge bg" style="font-size:9px">anon</span>${isAdm ? `<span style="font-family:var(--fm);font-size:10px;color:var(--accent);margin-left:6px">(${esc(g.username)})</span>` : ''}`
     : `<span>@${esc(g.username)}</span>`;
   const votes = JSON.parse(localStorage.getItem('votes') || '{}');
   return `
@@ -722,6 +744,7 @@ function gossipCard(g) {
             const voted = votes[g.id] && votes[g.id][key];
             return `<button class="rxn-btn${voted ? ' voted' : ''}" onclick="react('${g.id}','${key}',this)">${em} <span>${(g.reactions && g.reactions[key]) || 0}</span></button>`;
           }).join('')}
+          ${isAdm ? `<button class="rxn-btn" style="border-color:rgba(230,57,70,0.3);color:var(--accent)" onclick="adminDeleteGossip('${g.id}')"><i class="ti ti-trash"></i></button>` : ''}
         </div>
       </div>
     </div>`;
@@ -1117,6 +1140,13 @@ window.updTip = async function(id, status) {
   await updateBadges(); renderAdminSec('tips_in');
 };
 
+window.adminDeleteGossip = async function(id) {
+  if (!confirm(T('confirm_del'))) return;
+  await deleteDoc(doc(db, 'gossips', id));
+  showToast(T('delete_btn') + ' ✓');
+  renderGossip();
+};
+
 window.modG = async function(id, action) {
   if (action === 'delete') await deleteDoc(doc(db, 'gossips', id));
   else await updateDoc(doc(db, 'gossips', id), { status: action });
@@ -1212,6 +1242,15 @@ function showToast(msg) {
   clearTimeout(tTimer); tTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 window.showToast = showToast;
+
+function acceptDisclaimer() {
+  sessionStorage.setItem('disc','1');
+  document.getElementById('disclaimer-mo').classList.remove('open');
+}
+window.acceptDisclaimer = acceptDisclaimer;
+if (sessionStorage.getItem('disc')) {
+  document.getElementById('disclaimer-mo').classList.remove('open');
+}
 
 applyT();
 </script>
