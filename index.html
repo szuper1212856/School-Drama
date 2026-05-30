@@ -432,7 +432,7 @@ const L = {
     no_mod:"Nothing pending moderation.",no_users:"No users yet.",no_media:"No media yet.",
     no_stories:"No stories yet.",no_my_tips:"No tips submitted yet.",upload_photo:"Click to upload a photo",
     upload_video:"Click to upload a video",upload_ph:"PNG, JPG, GIF up to 10MB",upload_vh:"MP4, MOV up to 200MB",
-    uploading:"Uploading...",upload_done:"Uploaded! ✓",add_caption:"Add a caption...",
+    uploading:"Uploading...",upload_done:"Uploaded! ✓",upload_pending:"Uploaded! Awaiting admin approval ⏳",add_caption:"Add a caption...",
     comments:"Comments",add_comment:"Add a comment...",post_comment:"Post",comment_ok:"Comment posted! ✓",
     login_comment:"Log in to comment.",pending:"pending",approved:"approved",rejected:"rejected",
     from:"From",anon_label:"anon",no_ticker:"No ticker items yet.",tick_added:"Added!",tick_removed:"Removed.",
@@ -468,7 +468,7 @@ const L = {
     no_mod:"Nincs moderálásra váró tartalom.",no_users:"Még nincs felhasználó.",no_media:"Még nincs feltöltött médiafájl.",
     no_stories:"Még nincs közzétett sztori.",no_my_tips:"Még nem küldtél be tippet.",upload_photo:"Kattints a fotó feltöltéséhez",
     upload_video:"Kattints a videó feltöltéséhez",upload_ph:"PNG, JPG, GIF max 10MB",upload_vh:"MP4, MOV max 200MB",
-    uploading:"Feltöltés...",upload_done:"Feltöltve! ✓",add_caption:"Felirat hozzáadása...",
+    uploading:"Feltöltés...",upload_done:"Feltöltve! ✓",upload_pending:"Feltöltve! Admin jóváhagyásra vár ⏳",add_caption:"Felirat hozzáadása...",
     comments:"Hozzászólások",add_comment:"Hozzászólás...",post_comment:"Küld",comment_ok:"Hozzászólás közzétéve! ✓",
     login_comment:"Hozzászóláshoz be kell jelentkezni.",pending:"függő",approved:"jóváhagyva",rejected:"elutasítva",
     from:"Feladó",anon_label:"névtelen",no_ticker:"Még nincs ticker elem.",tick_added:"Hozzáadva!",tick_removed:"Eltávolítva.",
@@ -810,9 +810,9 @@ window.doPhotoUpload = async function(input) {
       const url = await getDownloadURL(task.snapshot.ref);
       await addDoc(collection(db, 'photos'), {
         caption, storageUrl: url, storagePath: `photos/${CU.uid}/${Date.now()}_${file.name}`,
-        userId: CU.uid, username: CUData.username, time: serverTimestamp(), approved: true
+        userId: CU.uid, username: CUData.username, time: serverTimestamp(), approved: false
       });
-      showToast(T('upload_done'));
+      showToast(T('upload_pending'));
       input.value = '';
       renderGallery();
     }
@@ -870,9 +870,9 @@ window.doVideoUpload = async function(input) {
       const url = await getDownloadURL(task.snapshot.ref);
       await addDoc(collection(db, 'videos'), {
         title, storageUrl: url, storagePath: path,
-        userId: CU.uid, username: CUData.username, time: serverTimestamp(), approved: true
+        userId: CU.uid, username: CUData.username, time: serverTimestamp(), approved: false
       });
-      showToast(T('upload_done'));
+      showToast(T('upload_pending'));
       input.value = '';
       renderVideos();
     }
@@ -1091,7 +1091,10 @@ async function renderAdminSec(sec) {
           <div style="font-size:13px;font-weight:500;margin-bottom:2px">${esc(m.type === 'photo' ? (m.caption || 'Untitled') : m.title)}</div>
           <div style="font-size:11px;color:var(--text3);font-family:var(--fm)">@${esc(m.username)} · ${rel(m.time)} · ${m.approved ? '<span style="color:#00c864">approved</span>' : '<span style="color:var(--accent)">pending</span>'}</div>
         </div>
-        <button class="btn bdn bsm" onclick="delMedia('${m.id}','${m.type}','${m.storagePath||''}')"><i class="ti ti-trash"></i>${T('delete_btn')}</button>
+        <div style="display:flex;gap:6px">
+          ${!m.approved ? `<button class="btn bsc bsm" onclick="approveMedia('${m.id}','${m.type}')"><i class="ti ti-check"></i>${T('approve')}</button>` : ''}
+          <button class="btn bdn bsm" onclick="delMedia('${m.id}','${m.type}','${m.storagePath||''}')"><i class="ti ti-trash"></i>${T('delete_btn')}</button>
+        </div>
       </div>`).join('') : `<div class="es"><i class="ti ti-photo-off"></i><p>${T('no_media')}</p></div>`;
   }
   if (sec === 'users_a') {
@@ -1118,6 +1121,12 @@ window.modG = async function(id, action) {
   if (action === 'delete') await deleteDoc(doc(db, 'gossips', id));
   else await updateDoc(doc(db, 'gossips', id), { status: action });
   await updateBadges(); renderAdminSec('mod');
+};
+
+window.approveMedia = async function(id, type) {
+  await updateDoc(doc(db, type === 'photo' ? 'photos' : 'videos', id), { approved: true });
+  showToast(T('approve') + ' ✓');
+  renderAdminSec('media');
 };
 
 window.delMedia = async function(id, type, path) {
