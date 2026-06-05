@@ -1410,6 +1410,20 @@ function showToast(msg) {
 }
 window.showToast = showToast;
 
+function checkTosScroll() {
+  const el = document.getElementById('tos-scroll');
+  const btn = document.getElementById('tos-accept-btn');
+  const hint = document.getElementById('tos-hint');
+  if (!el || !btn) return;
+  const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 10;
+  if (atBottom) {
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+    if (hint) hint.style.display = 'none';
+  }
+}
+window.checkTosScroll = checkTosScroll;
+
 function acceptDisclaimer() {
   localStorage.setItem('tos_accepted','1');
   document.getElementById('disclaimer-mo').classList.remove('open');
