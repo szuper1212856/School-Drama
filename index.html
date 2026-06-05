@@ -229,6 +229,11 @@ main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1
     <h3 style="font-family:var(--fd);font-size:16px;font-weight:800;margin-bottom:14px" data-t="spill_tea">Spill the Tea</h3>
     <div class="fg"><label data-t="your_gossip">Your gossip</label><textarea id="g-text" data-t-placeholder="gossip_ph"></textarea></div>
     <div class="fg"><label data-t="tag_it">Tag it</label><div class="tag-row" id="g-tags"></div></div>
+    <div class="fg">
+      <label data-t="tag_people">Tag people</label>
+      <input type="text" id="g-mentions" data-t-placeholder="tag_people_ph" style="font-family:var(--fm);font-size:12px">
+      <div style="font-size:10px;color:var(--text3);margin-top:4px;font-family:var(--fm)" data-t="tag_people_hint">Separate usernames with commas e.g. @alex, @nora</div>
+    </div>
     <div id="g-media-preview" style="margin-bottom:10px;display:none">
       <div style="position:relative;display:inline-block">
         <img id="g-media-img" style="max-height:160px;border-radius:6px;border:1px solid var(--border);display:none" alt="">
@@ -238,7 +243,7 @@ main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:4px">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <label class="trow"><div class="tog on" id="g-anon" onclick="this.classList.toggle('on')"></div><span data-t="post_anon">Post anonymously</span></label>
+        <label class="trow"><div class="tog" id="g-anon" onclick="this.classList.toggle('on')"></div><span data-t="post_anon">Post anonymously</span></label>
         <button class="btn bgh bsm" onclick="document.getElementById('g-media-in').click()" style="gap:5px"><i class="ti ti-paperclip"></i><span data-t="attach">Attach</span></button>
         <input type="file" id="g-media-in" accept="image/*,video/*" style="display:none" onchange="previewGossipMedia(this)">
         <span id="g-media-name" style="font-size:11px;color:var(--text3);font-family:var(--fm)"></span>
@@ -274,7 +279,7 @@ main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1
     <div class="fg"><label data-t="details">Details</label><textarea id="t-details" style="min-height:100px" data-t-placeholder="tip_det_ph"></textarea></div>
     <div class="fg"><label data-t="category">Category</label><div class="tag-row" id="t-tags"></div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:4px">
-      <label class="trow"><div class="tog on" id="t-anon" onclick="this.classList.toggle('on')"></div><span data-t="submit_anon">Submit anonymously</span></label>
+      <label class="trow"><div class="tog" id="t-anon" onclick="this.classList.toggle('on')"></div><span data-t="submit_anon">Submit anonymously</span></label>
       <button class="btn bp" onclick="submitTip()"><i class="ti ti-send"></i><span data-t="submit_tip_btn">Submit Tip</span></button>
     </div>
   </div>
@@ -395,13 +400,22 @@ main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1
 </div>
 
 <div class="mo open" id="disclaimer-mo" onclick="">
-  <div class="md" style="max-width:480px;border-top:2px solid var(--accent)">
+  <div class="md" style="max-width:540px;border-top:2px solid var(--accent);display:flex;flex-direction:column;max-height:90vh">
     <div style="font-family:var(--fm);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:10px" data-t="disclaimer_kicker">Community Standards</div>
     <h2 style="font-family:var(--fd);font-size:20px;font-weight:800;margin-bottom:12px;line-height:1.2" data-t="disclaimer_title">Before you enter</h2>
-    <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px" data-t="disclaimer_body">Everything posted on this site is your personal responsibility. By using this platform you agree that any content violating our community standards — including harassment, hate speech, personal attacks, or illegal content — may result in consequences including being reported to school administration.</p>
-    <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px" data-t="disclaimer_body2">Anonymous posts are not truly anonymous — administrators can see who posted what.</p>
+    <div id="tos-scroll" onscroll="checkTosScroll()" style="overflow-y:auto;flex:1;margin-bottom:16px;padding-right:8px;border:1px solid var(--border);border-radius:var(--r);padding:14px;background:var(--bg3)">
+      <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:14px"><strong style="color:var(--text)">1. Your Responsibility</strong><br>Everything you post, upload, or submit on this platform is your sole and full personal responsibility. The owner and creator of this website bears no responsibility whatsoever for any user-generated content.</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:14px"><strong style="color:var(--text)">2. Prohibited Content</strong><br>You agree not to post content that is harassing, threatening, defamatory, discriminatory, sexually explicit, or illegal. Violations may be reported to school administration and/or relevant authorities.</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:14px"><strong style="color:var(--text)">3. Privacy</strong><br>Do not post personally identifiable information about others without their consent. This includes full names, addresses, phone numbers, or photos taken without permission.</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:14px"><strong style="color:var(--text)">4. Anonymous Posts</strong><br>Posting anonymously does not protect you from consequences. Your real identity is stored and can be revealed to administrators and authorities if required by law or school policy.</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:14px"><strong style="color:var(--text)">5. Moderation</strong><br>All content is subject to moderation. Administrators reserve the right to remove any content at any time without notice. Repeated violations will result in account suspension.</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:14px"><strong style="color:var(--text)">6. No Liability</strong><br>The platform owner is not liable for any damages, losses, or consequences arising from content posted by users. You use this platform entirely at your own risk.</p>
+      <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:4px"><strong style="color:var(--text)">7. Acceptance</strong><br>By clicking "I understand, enter" you confirm you have read and agree to all of the above. If you do not agree, leave the site.</p>
+      <p style="font-size:12px;color:var(--text3);margin-top:14px;padding-top:10px;border-top:1px solid var(--border)">Full terms available at: <a href="https://docs.google.com/document/d/YOUR_DOC_ID" target="_blank" style="color:var(--accent)">View full Terms of Service ↗</a></p>
+    </div>
+    <p id="tos-hint" style="font-size:11px;color:var(--text3);font-family:var(--fm);margin-bottom:10px;text-align:center" data-t="scroll_to_accept">↓ Scroll to the bottom to accept</p>
     <div style="display:flex;gap:8px">
-      <button class="btn bp" style="flex:1" onclick="acceptDisclaimer()"><i class="ti ti-check"></i><span data-t="disclaimer_accept">I understand, enter</span></button>
+      <button class="btn bp" style="flex:1;opacity:0.4;pointer-events:none" id="tos-accept-btn" onclick="acceptDisclaimer()"><i class="ti ti-check"></i><span data-t="disclaimer_accept">I understand, enter</span></button>
       <button class="btn bgh" onclick="window.history.back()"><i class="ti ti-x"></i><span data-t="disclaimer_leave">Leave</span></button>
     </div>
   </div>
@@ -411,7 +425,7 @@ main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
@@ -437,6 +451,7 @@ const L = {
     nav_home:"Home",nav_gossip:"Gossip Wall",nav_gallery:"Paparazzi",nav_videos:"Videos",nav_tips:"Tips",nav_admin:"Admin",
     login:"Login",logout:"Log Out",trending:"Trending",most_reacted:"Most Reacted",latest_snaps:"Latest Snaps",
     gossip_wall:"Gossip Wall",spill_tea:"Spill the Tea",your_gossip:"Your Gossip",tag_it:"Tag it",
+    tag_people:"Tag people",tag_people_ph:"@username, @username...",tag_people_hint:"Separate usernames with commas",
     post_anon:"Post anonymously",post_gossip:"Post Gossip",gossip_ph:"What did you see? What did you hear?",
     no_photos:"No photos yet. Be the first paparazzi!",no_videos:"No videos yet. Start recording!",
     submit_tip:"Submit a Tip",tip_desc:"Got a lead? Tell our editors.",headline:"Headline",details:"Details",
@@ -465,18 +480,21 @@ const L = {
     from:"From",anon_label:"anon",no_ticker:"No ticker items yet.",tick_added:"Added!",tick_removed:"Removed.",
     confirm_del:"Are you sure?",suspended:"User suspended.",upload_login:"Log in to upload.",
     no_stories_home:"No stories published yet. Check back soon!",wrong_creds:"Wrong email or password.",
+    verify_sent:"Account created! Check your email and click the verification link before logging in. ✉️",
+    verify_email:"Please verify your email first. Check your inbox for the verification link.",
     email_taken:"Email already in use.",weak_pass:"Password is too weak (min 6 chars).",
     uname_taken:"Username already taken.",read_more:"Read full story",
     disclaimer_kicker:"Community Standards",disclaimer_title:"Before you enter",
     disclaimer_body:"Everything posted on this site is your personal responsibility. By using this platform you agree that any content violating our community standards — including harassment, hate speech, personal attacks, or illegal content — may result in consequences including being reported to school administration.",
     disclaimer_body2:"Anonymous posts are not truly anonymous — administrators can see who posted what.",
-    disclaimer_accept:"I understand, enter",disclaimer_leave:"Leave"
+    disclaimer_accept:"I understand, enter",disclaimer_leave:"Leave",scroll_to_accept:"↓ Scroll to the bottom to accept"
   },
   hu:{
     tagline:"minden dráma · minden idő",breaking:"FRISS HÍR",
     nav_home:"Főoldal",nav_gossip:"Pletykafal",nav_gallery:"Paparazzi",nav_videos:"Videók",nav_tips:"Tippek",nav_admin:"Admin",
     login:"Bejelentkezés",logout:"Kijelentkezés",trending:"Trending",most_reacted:"Legtöbbet reagált",latest_snaps:"Legújabb fotók",
     gossip_wall:"Pletykafal",spill_tea:"Öntsd ki a mérgét",your_gossip:"A pletykád",tag_it:"Jelölj meg",
+    tag_people:"Jelölj meg embereket",tag_people_ph:"@felhasználónév, @felhasználónév...",tag_people_hint:"Vesszővel elválasztva",
     post_anon:"Névtelen közzététel",post_gossip:"Pletyka közzé",gossip_ph:"Mit láttál? Mit hallottál?",
     no_photos:"Még nincs fotó. Légy te az első!",no_videos:"Még nincs videó. Kezdj el forgatni!",
     submit_tip:"Tipp beküldése",tip_desc:"Van egy nyomad? Mondd el a szerkesztőknek.",headline:"Cím",details:"Részletek",
@@ -505,12 +523,14 @@ const L = {
     from:"Feladó",anon_label:"névtelen",no_ticker:"Még nincs ticker elem.",tick_added:"Hozzáadva!",tick_removed:"Eltávolítva.",
     confirm_del:"Biztos vagy benne?",suspended:"Felhasználó felfüggesztve.",upload_login:"Feltöltéshez be kell jelentkezni.",
     no_stories_home:"Még nincs közzétett sztori. Nézz vissza hamarosan!",wrong_creds:"Hibás email vagy jelszó.",
+    verify_sent:"Fiók létrehozva! Ellenőrizd az emailedet és kattints a megerősítő linkre bejelentkezés előtt. ✉️",
+    verify_email:"Kérlek először erősítsd meg az emailedet. Nézd meg a beérkező leveleket.",
     email_taken:"Ez az email már foglalt.",weak_pass:"A jelszó túl gyenge (min. 6 karakter).",
     uname_taken:"Ez a felhasználónév már foglalt.",read_more:"Teljes sztori",
     disclaimer_kicker:"Közösségi szabályok",disclaimer_title:"Mielőtt belépsz",
     disclaimer_body:"Minden, amit ezen az oldalon teszel közzé, a te személyes felelősséged. Az oldal használatával elfogadod, hogy a közösségi szabályokat sértő tartalmak — beleértve a zaklatást, gyűlöletbeszédet, személyes támadásokat vagy jogellenes tartalmat — következményekkel járhatnak, beleértve az iskolai adminisztrációnak való bejelentést.",
     disclaimer_body2:"A névtelen posztok nem valóban névtelenek — az adminisztrátorok látják, ki mit posztolt.",
-    disclaimer_accept:"Megértettem, belépek",disclaimer_leave:"Kilépés"
+    disclaimer_accept:"Megértettem, belépek",disclaimer_leave:"Kilépés",scroll_to_accept:"↓ Görgess le az elfogadáshoz"
   }
 };
 
@@ -750,6 +770,7 @@ function gossipCard(g) {
         <span class="gt">${rel(g.time)}</span>
       </div>
       <div class="gb">${esc(g.text)}</div>
+      ${g.mentions && g.mentions.length ? `<div style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:4px">${g.mentions.map(m=>`<span style="font-family:var(--fm);font-size:11px;color:var(--cyan);background:var(--cyan-dim);padding:2px 8px;border-radius:10px;border:1px solid rgba(0,212,255,0.2)">@${esc(m)}</span>`).join('')}</div>` : ''}
       ${g.mediaUrl ? (g.mediaType === 'image'
         ? `<img src="${g.mediaUrl}" style="max-width:100%;max-height:300px;border-radius:6px;border:1px solid var(--border);margin-bottom:12px;cursor:pointer" onclick="openLB('${g.mediaUrl}')" alt="">`
         : `<video src="${g.mediaUrl}" controls style="max-width:100%;max-height:300px;border-radius:6px;border:1px solid var(--border);margin-bottom:12px"></video>`
@@ -818,6 +839,8 @@ async function submitGossip() {
   if (!txt || !CU || !CUData) { showToast(T('fill_req')); return; }
   const tags = getActive('g-tags');
   const anon = document.getElementById('g-anon').classList.contains('on');
+  const mentionsRaw = document.getElementById('g-mentions').value.trim();
+  const mentions = mentionsRaw ? mentionsRaw.split(',').map(m => m.trim().replace(/^@/,'')).filter(Boolean) : [];
   const fileInput = document.getElementById('g-media-in');
   const file = fileInput.files[0];
   let mediaUrl = null;
@@ -838,9 +861,11 @@ async function submitGossip() {
     text: txt, tags, anon, userId: CU.uid, username: CUData.username,
     reactions: { fire: 0, eyes: 0, skull: 0, sus: 0 },
     time: serverTimestamp(), status: 'pending',
+    mentions,
     ...(mediaUrl && { mediaUrl, mediaType })
   });
   document.getElementById('g-text').value = '';
+  document.getElementById('g-mentions').value = '';
   clearActive('g-tags');
   window.clearGossipMedia();
   showToast(T('gossip_posted'));
@@ -1048,7 +1073,13 @@ async function doLogin() {
   err.style.display = 'none';
   if (!email || !pass) { showToast(T('fill_req')); return; }
   try {
-    await signInWithEmailAndPassword(auth, email, pass);
+    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    if (!cred.user.emailVerified) {
+      await signOut(auth);
+      err.textContent = T('verify_email');
+      err.style.display = 'block';
+      return;
+    }
     showToast(T('login_ok'));
     goTo('home');
   } catch(e) {
@@ -1070,11 +1101,14 @@ async function doRegister() {
   if (!unameSnap.empty) { err.textContent = T('uname_taken'); err.style.display = 'block'; return; }
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await sendEmailVerification(cred.user);
     await setDoc(doc(db, 'users', cred.user.uid), {
       username: uname, name, email, role: 'student', createdAt: serverTimestamp()
     });
-    showToast(T('reg_ok'));
-    goTo('home');
+    await signOut(auth);
+    err.style.color = '#00c864';
+    err.textContent = T('verify_sent');
+    err.style.display = 'block';
   } catch(e) {
     if (e.code === 'auth/email-already-in-use') err.textContent = T('email_taken');
     else if (e.code === 'auth/weak-password') err.textContent = T('weak_pass');
@@ -1377,11 +1411,11 @@ function showToast(msg) {
 window.showToast = showToast;
 
 function acceptDisclaimer() {
-  sessionStorage.setItem('disc','1');
+  localStorage.setItem('tos_accepted','1');
   document.getElementById('disclaimer-mo').classList.remove('open');
 }
 window.acceptDisclaimer = acceptDisclaimer;
-if (sessionStorage.getItem('disc')) {
+if (localStorage.getItem('tos_accepted')) {
   document.getElementById('disclaimer-mo').classList.remove('open');
 }
 
