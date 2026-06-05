@@ -337,6 +337,7 @@ main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1
         <div class="ani" onclick="aN('publish',this)"><i class="ti ti-file-plus"></i><span data-t="pub_story">Publish Story</span></div>
         <div class="ani" onclick="aN('tips_in',this)"><i class="ti ti-inbox"></i><span data-t="tips_inbox">Tips Inbox</span><span id="tbadge" class="badge br" style="margin-left:auto;display:none"></span></div>
         <div class="ani" onclick="aN('mod',this)"><i class="ti ti-shield-check"></i><span data-t="moderation">Moderation</span><span id="mbadge" class="badge by" style="margin-left:auto;display:none"></span></div>
+        <div class="ani" onclick="aN('reports_a',this)"><i class="ti ti-flag"></i><span data-t="reports">Reports</span><span id="rbadge" class="badge br" style="margin-left:auto;display:none"></span></div>
         <div class="ani" onclick="aN('media',this)"><i class="ti ti-photo"></i><span data-t="media">Media</span></div>
         <div class="ani" onclick="aN('users_a',this)"><i class="ti ti-users"></i><span data-t="users">Users</span></div>
         <div class="ani" onclick="aN('ticker_a',this)"><i class="ti ti-marquee"></i><span data-t="ticker_mgr">Ticker</span></div>
@@ -367,6 +368,10 @@ main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1
         <div class="asec" id="a-mod">
           <div class="sh"><h2 data-t="moderation">Moderation</h2></div>
           <div id="mod-list"></div>
+        </div>
+        <div class="asec" id="a-reports_a">
+          <div class="sh"><h2 data-t="reports">Reports</h2></div>
+          <div id="reports-list"></div>
         </div>
         <div class="asec" id="a-media">
           <div class="sh"><h2 data-t="media">Media</h2></div>
@@ -410,6 +415,35 @@ main{max-width:980px;margin:0 auto;padding:28px 20px;position:relative;z-index:1
     <a href="https://docs.google.com/document/d/YOUR_DOC_ID" target="_blank" style="font-family:var(--fm);font-size:10px;color:var(--text3);text-decoration:none;letter-spacing:.06em;text-transform:uppercase;transition:color .2s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text3)'" data-t="tos_link">Terms of Service</a>
   </div>
 </footer>
+
+<div class="mo" id="report-mo" onclick="if(event.target===this)closeReport()">
+  <div class="md" style="max-width:460px;border-top:2px solid var(--accent)">
+    <button class="mc" onclick="closeReport()"><i class="ti ti-x"></i></button>
+    <div style="font-family:var(--fm);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:8px" data-t="report_kicker">Report Content</div>
+    <h3 style="font-family:var(--fd);font-size:18px;font-weight:800;margin-bottom:6px" data-t="report_title">Report / Takedown Request</h3>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6" data-t="report_desc">If this content involves you without your consent, is harmful, or violates our community standards, let us know. Admins will review your report as soon as possible.</p>
+    <div class="fg">
+      <label data-t="report_reason_label">Reason</label>
+      <select id="report-reason">
+        <option value="no_consent" data-t="report_no_consent">Posted without my consent</option>
+        <option value="privacy" data-t="report_privacy">Violates my privacy</option>
+        <option value="harassment" data-t="report_harassment">Harassment or bullying</option>
+        <option value="false_info" data-t="report_false">False information about me</option>
+        <option value="inappropriate" data-t="report_inappropriate">Inappropriate content</option>
+        <option value="other" data-t="report_other">Other</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label data-t="report_details_label">Details (optional)</label>
+      <textarea id="report-details" style="min-height:80px" data-t-placeholder="report_details_ph"></textarea>
+    </div>
+    <div id="report-login-notice" style="display:none" class="notice"><span data-t="report_login_note">You can report without an account. Your report will be anonymous.</span></div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn bp" style="flex:1" onclick="submitReport()"><i class="ti ti-flag"></i><span data-t="report_submit">Submit Report</span></button>
+      <button class="btn bgh" onclick="closeReport()" data-t="cancel">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <div class="lb" id="lb" onclick="this.classList.remove('open')"><img id="lb-img" src="" alt=""></div>
 
@@ -506,6 +540,18 @@ const L = {
     login_comment:"Log in to comment.",pending:"pending",approved:"approved",rejected:"rejected",
     from:"From",anon_label:"anon",no_ticker:"No ticker items yet.",tick_added:"Added!",tick_removed:"Removed.",
     confirm_del:"Are you sure?",suspended:"User suspended.",upload_login:"Log in to upload.",
+    reports:"Reports",report_kicker:"Report Content",report_title:"Report / Takedown Request",
+    report_desc:"If this content involves you without your consent, is harmful, or violates community standards, let us know.",
+    report_reason_label:"Reason",report_details_label:"Details (optional)",
+    report_details_ph:"Describe why this content should be removed...",
+    report_no_consent:"Posted without my consent",report_privacy:"Violates my privacy",
+    report_harassment:"Harassment or bullying",report_false:"False information about me",
+    report_inappropriate:"Inappropriate content",report_other:"Other",
+    report_login_note:"You can report without an account. Your report will be anonymous.",
+    report_submit:"Submit Report",cancel:"Cancel",
+    report_sent:"Report submitted. Admins will review it. ✓",
+    report_resolved:"Report resolved.",report_removed:"Content removed.",
+    no_reports:"No reports yet.",
     no_stories_home:"No stories published yet. Check back soon!",wrong_creds:"Wrong email or password.",
     verify_sent:"Account created! Check your email and click the verification link before logging in. ✉️",
     verify_email:"Please verify your email first. Check your inbox for the verification link.",
@@ -553,6 +599,18 @@ const L = {
     login_comment:"Hozzászóláshoz be kell jelentkezni.",pending:"függő",approved:"jóváhagyva",rejected:"elutasítva",
     from:"Feladó",anon_label:"névtelen",no_ticker:"Még nincs ticker elem.",tick_added:"Hozzáadva!",tick_removed:"Eltávolítva.",
     confirm_del:"Biztos vagy benne?",suspended:"Felhasználó felfüggesztve.",upload_login:"Feltöltéshez be kell jelentkezni.",
+    reports:"Bejelentések",report_kicker:"Tartalom bejelentése",report_title:"Bejelentés / Eltávolítási kérelem",
+    report_desc:"Ha ez a tartalom beleegyezésed nélkül tartalmaz rólad valamit, káros, vagy megsérti a közösségi szabályokat, jelezd nekünk.",
+    report_reason_label:"Ok",report_details_label:"Részletek (opcionális)",
+    report_details_ph:"Írd le, miért kellene eltávolítani ezt a tartalmat...",
+    report_no_consent:"Beleegyezésem nélkül tették közzé",report_privacy:"Megsérti a magánszférámat",
+    report_harassment:"Zaklatás vagy bántalmazás",report_false:"Hamis információ rólam",
+    report_inappropriate:"Nem megfelelő tartalom",report_other:"Egyéb",
+    report_login_note:"Bejelentkezés nélkül is bejelenthetsz. A bejelentésed névtelen lesz.",
+    report_submit:"Bejelentés küldése",cancel:"Mégse",
+    report_sent:"Bejelentés elküldve. Az adminok megvizsgálják. ✓",
+    report_resolved:"Bejelentés lezárva.",report_removed:"Tartalom eltávolítva.",
+    no_reports:"Még nincs bejelentés.",
     no_stories_home:"Még nincs közzétett sztori. Nézz vissza hamarosan!",wrong_creds:"Hibás email vagy jelszó.",
     verify_sent:"Fiók létrehozva! Ellenőrizd az emailedet és kattints a megerősítő linkre bejelentkezés előtt. ✉️",
     verify_email:"Kérlek először erősítsd meg az emailedet. Nézd meg a beérkező leveleket.",
@@ -816,6 +874,7 @@ function gossipCard(g) {
             return `<button class="rxn-btn${voted ? ' voted' : ''}" onclick="react('${g.id}','${key}',this)">${em} <span>${(g.reactions && g.reactions[key]) || 0}</span></button>`;
           }).join('')}
           <button class="rxn-btn" onclick="toggleComments('gossips','${g.id}',this)"><i class="ti ti-message"></i> <span data-t="comments">Comments</span></button>
+          <button class="rxn-btn" style="color:var(--text3)" onclick="openReport('gossip','${g.id}')"><i class="ti ti-flag"></i></button>
           ${isAdm ? `<button class="rxn-btn" style="border-color:rgba(230,57,70,0.3);color:var(--accent)" onclick="adminDeleteGossip('${g.id}')"><i class="ti ti-trash"></i></button>` : ''}
         </div>
       </div>
@@ -931,8 +990,9 @@ async function renderGallery() {
       <div class="gi" style="aspect-ratio:unset">
         <div class="gthumb" style="aspect-ratio:4/3;cursor:pointer" onclick="openLB('${p.storageUrl}')"><img src="${p.storageUrl}" alt="" loading="lazy"></div>
         <div class="gcap"><strong>${esc(p.caption || 'Untitled')}</strong>@${esc(p.username)} · ${rel(p.time)}</div>
-        <div style="padding:6px 10px;border-top:1px solid var(--border)">
-          <button class="rxn-btn" style="font-size:11px" onclick="toggleComments('photos','${p.id}',this)"><i class="ti ti-message"></i> <span data-t="comments">Comments</span></button>
+        <div style="padding:6px 10px;border-top:1px solid var(--border);display:flex;gap:6px">
+          <button class="rxn-btn" style="font-size:11px;flex:1" onclick="toggleComments('photos','${p.id}',this)"><i class="ti ti-message"></i> <span data-t="comments">Comments</span></button>
+          <button class="rxn-btn" style="font-size:11px;color:var(--text3)" onclick="openReport('photo','${p.id}')"><i class="ti ti-flag"></i></button>
         </div>
         <div id="comments-photos-${p.id}" style="display:none;padding:10px;border-top:1px solid var(--border)"></div>
       </div>`).join('');
@@ -994,8 +1054,9 @@ async function renderVideos() {
           <div class="pi"><i class="ti ti-player-play" style="font-size:16px;margin-left:2px"></i></div>
         </div>
         <div class="vi"><h4>${esc(v.title)}</h4><p>@${esc(v.username)} · ${rel(v.time)}</p></div>
-        <div style="padding:6px 12px;border-top:1px solid var(--border)">
-          <button class="rxn-btn" style="font-size:11px" onclick="toggleComments('videos','${v.id}',this)"><i class="ti ti-message"></i> <span data-t="comments">Comments</span></button>
+        <div style="padding:6px 12px;border-top:1px solid var(--border);display:flex;gap:6px">
+          <button class="rxn-btn" style="font-size:11px;flex:1" onclick="toggleComments('videos','${v.id}',this)"><i class="ti ti-message"></i> <span data-t="comments">Comments</span></button>
+          <button class="rxn-btn" style="font-size:11px;color:var(--text3)" onclick="openReport('video','${v.id}')"><i class="ti ti-flag"></i></button>
         </div>
         <div id="comments-videos-${v.id}" style="display:none;padding:10px;border-top:1px solid var(--border)"></div>
       </div>`).join('');
@@ -1170,10 +1231,13 @@ async function renderAdmin() {
 async function updateBadges() {
   const pt = (await getDocs(query(collection(db, 'tips'), where('status', '==', 'pending')))).size;
   const pm = (await getDocs(query(collection(db, 'gossips'), where('status', '==', 'pending')))).size;
+  const pr = (await getDocs(query(collection(db, 'reports'), where('status', '==', 'pending')))).size;
   const tb = document.getElementById('tbadge');
   const mb = document.getElementById('mbadge');
+  const rb = document.getElementById('rbadge');
   if (tb) { tb.textContent = pt || ''; tb.style.display = pt ? '' : 'none'; }
   if (mb) { mb.textContent = pm || ''; mb.style.display = pm ? '' : 'none'; }
+  if (rb) { rb.textContent = pr || ''; rb.style.display = pr ? '' : 'none'; }
 }
 
 window.aN = function(sec, btn) {
@@ -1271,11 +1335,100 @@ async function renderAdminSec(sec) {
   if (sec === 'publish') { buildTags('p-tags'); renderPublishedStories(); }
   if (sec === 'ticker_a') renderTickerAdmin();
   if (sec === 'changelog_a') renderChangelog();
+  if (sec === 'reports_a') renderReports();
 }
 
 window.updTip = async function(id, status) {
   await updateDoc(doc(db, 'tips', id), { status });
   await updateBadges(); renderAdminSec('tips_in');
+};
+
+let reportTarget = { type: null, id: null };
+
+window.openReport = function(type, id) {
+  reportTarget = { type, id };
+  const notice = document.getElementById('report-login-notice');
+  if (notice) notice.style.display = CU ? 'none' : 'block';
+  document.getElementById('report-reason').value = 'no_consent';
+  document.getElementById('report-details').value = '';
+  document.getElementById('report-mo').classList.add('open');
+};
+
+window.closeReport = function() {
+  document.getElementById('report-mo').classList.remove('open');
+  reportTarget = { type: null, id: null };
+};
+
+window.submitReport = async function() {
+  const reason = document.getElementById('report-reason').value;
+  const details = document.getElementById('report-details').value.trim();
+  await addDoc(collection(db, 'reports'), {
+    contentType: reportTarget.type,
+    contentId: reportTarget.id,
+    reason, details,
+    reportedBy: CU ? CU.uid : 'anonymous',
+    reporterUsername: CUData ? CUData.username : 'anonymous',
+    time: serverTimestamp(),
+    status: 'pending'
+  });
+  closeReport();
+  showToast(T('report_sent'));
+};
+
+async function renderReports() {
+  const snap = await getDocs(query(collection(db, 'reports'), where('status', '==', 'pending')));
+  const reports = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => (b.time?.seconds || 0) - (a.time?.seconds || 0));
+  const list = document.getElementById('reports-list');
+  if (!list) return;
+  const reasonLabels = {
+    no_consent: T('report_no_consent'), privacy: T('report_privacy'),
+    harassment: T('report_harassment'), false_info: T('report_false'),
+    inappropriate: T('report_inappropriate'), other: T('report_other')
+  };
+  list.innerHTML = reports.length ? reports.map(r => `
+    <div class="qi">
+      <div class="qh">
+        <div>
+          <div style="font-family:var(--fd);font-size:14px;font-weight:700">${esc(reasonLabels[r.reason] || r.reason)}</div>
+          <div style="font-family:var(--fm);font-size:10px;color:var(--text3);margin-top:2px">
+            ${esc(r.contentType)} · reported by @${esc(r.reporterUsername)} · ${rel(r.time)}
+          </div>
+        </div>
+        <span class="badge by">${T('pending')}</span>
+      </div>
+      ${r.details ? `<p style="font-size:13px;color:var(--text2);margin:8px 0">"${esc(r.details)}"</p>` : ''}
+      <div class="qa">
+        <button class="btn bdn bsm" onclick="removeReportedContent('${r.id}','${r.contentType}','${r.contentId}')">
+          <i class="ti ti-trash"></i>${T('report_removed')}
+        </button>
+        <button class="btn bsc bsm" onclick="resolveReport('${r.id}')">
+          <i class="ti ti-check"></i>${T('report_resolved')}
+        </button>
+      </div>
+    </div>`).join('') :
+    `<div class="es"><i class="ti ti-flag-off"></i><p>${T('no_reports')}</p></div>`;
+}
+
+window.resolveReport = async function(id) {
+  await updateDoc(doc(db, 'reports', id), { status: 'resolved' });
+  showToast(T('report_resolved'));
+  renderReports();
+  updateBadges();
+};
+
+window.removeReportedContent = async function(reportId, type, contentId) {
+  if (!confirm(T('confirm_del'))) return;
+  const colMap = { gossip: 'gossips', photo: 'photos', video: 'videos' };
+  const col = colMap[type];
+  if (col) await deleteDoc(doc(db, col, contentId));
+  await updateDoc(doc(db, 'reports', reportId), { status: 'resolved' });
+  showToast(T('report_removed'));
+  renderReports();
+  updateBadges();
+  if (type === 'gossip') renderGossip();
+  if (type === 'photo') renderGallery();
+  if (type === 'video') renderVideos();
 };
 
 window.adminDeleteGossip = async function(id) {
